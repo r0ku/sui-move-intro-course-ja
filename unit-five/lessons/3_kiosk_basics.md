@@ -1,55 +1,55 @@
 # Sui Kiosk
 
-Now we have learned the basics of **Programmable Transaction Block** and **Hot Potato Design Pattern**, it is much easier for us to understand the mechanism behind **Sui Kiosk**. Let's get started
+**プログラマブルトランザクションブロック**と**ホットポテトデザインパターン**の基本を学んだので、**Sui Kiosk** の背後にあるメカニズムを理解するのがとても簡単になります。始めましょう。
 
-## What is Sui Kiosk?
+## Sui Kiosk とは何ですか？
 
-We're probably familiar to some sort of kiosks in real life. It can be a stall in a tourist shopping mall selling you merchantdise, apparels or any local souvenirs. It can be in a form of big screen displaying you digital images of the products you're interested in. They may all come with different forms and sizes but they have one common trait: _they sell something and display their wares openly for passersby to browse and engage with_
+私たちは現実生活でいくつかの種類のキオスク (kiosk) におそらく馴染みがあります。それは観光ショッピングモールで商品、衣類、または地元のお土産を販売する屋台かもしれません。興味のある商品のデジタル画像を表示する大きなスクリーンの形かもしれません。これらはすべて異なる形やサイズで来るかもしれませんが、1 つの共通の特徴があります：_何かを販売し、通行人が閲覧し、関わることができるように商品を公然と表示する_
 
-**Sui Kiosk** is the digital version of these types of kiosk but for digital assets and collectibles. Sui Kiosk is a _decentralized system for onchain commerce applications on Sui_. Practically, Kiosk is a part of the Sui framework, and it is native to the system and available to everyone out of the box.
+**Sui Kiosk** は、これらのタイプのキオスクのデジタル版ですが、デジタルアセットやコレクティブル向けです。Sui Kiosk は、_Sui 上のオンチェーンコマースアプリケーションのための分散システム_ です。実質的に、Kiosk は Sui フレームワークの一部であり、システムにネイティブで、すぐに誰でも利用できます。
 
-## Why Sui Kiosk?
+## なぜ Sui Kiosk？
 
-Sui Kiosk is created to answer these needs:
+Sui Kiosk は以下のニーズに答えるために作成されました：
 
-- Can we list an item on marketplace and continue using it?
-- Is there a way to create a “safe” for collectibles?
-- Can we build an onchain system with custom logic for transfer management?
-- How to favor creators and guarantee royalties?
-- Can we avoid centralization of traditional marketplaces?
+- マーケットプレイスにアイテムを出品して、それを使い続けることはできますか？
+- コレクティブル用の「金庫」を作成する方法はありますか？
+- 転送管理のためのカスタムロジックを持つオンチェーンシステムを構築できますか？
+- クリエイターを優遇し、ロイヤリティを保証するにはどうすればよいですか？
+- 従来のマーケットプレイスの中央集権化を避けることができますか？
 
-## Main Components
+## 主要コンポーネント
 
-Sui Kiosk consists these 2 main components:
+Sui Kiosk は以下の 2 つの主要コンポーネントで構成されています：
 
-- `Kiosk` + `KioskOwnerCap`: `Kiosk` is the safe that will store our assets and display them for selling, it is implemented as a shared object allowing interactions between multiple parties. Each `Kiosk` will have a corresponding Kiosk Owner whoever holding the `KioskOwnerCap`. The Kiosk Owner still have the _logical ownership_ over their assets even when they are _physically_ placed in the kiosk.
+- `Kiosk` + `KioskOwnerCap`: `Kiosk` は私たちのアセットを保存し、販売のために表示する金庫で、複数の当事者間の相互作用を可能にする共有オブジェクトとして実装されています。各 `Kiosk` には、`KioskOwnerCap` を保持する対応する Kiosk Owner がいます。Kiosk Owner は、アセットがキオスクに*物理的に*配置されていても、それらのアセットに対して*論理的な所有権* を持っています。
 
-- `TransferPolicy` + `TransferPolicyCap`: `TransferPolicy` is a shared object defines the conditions in which the assets can be traded or sold. Each `TransferPolicy` consists a set of _rules_, with each rule specifies the requirements every trade must sastify. Rules can be enabled or disabled from the `TransferPolicy` by whoever owning the `TransferOwnerCap`. Greater example of `TransferPolicy`'s rule is the royalty fees guarantee.
+- `TransferPolicy` + `TransferPolicyCap`: `TransferPolicy` は、アセットが取引または販売される条件を定義する共有オブジェクトです。各 `TransferPolicy` は _ルール (rule)_ のセットで構成され、各ルールはすべての取引が満たす必要がある要件を指定します。ルールは `TransferOwnerCap` を所有する人によって `TransferPolicy` から有効化または無効化できます。`TransferPolicy` のルールの優れた例は、ロイヤリティ料金の保証です。
 
-## Sui Kiosk Users
+## Sui Kiosk ユーザー
 
-Sui Kiosk use-cases is centered around these 3 types of users:
+Sui Kiosk のユースケースは、以下の 3 つのタイプのユーザーを中心に展開されます：
 
-- Kiosk Owner (Seller/KO): One must own the `KioskOwnerCap` to become the Kiosk Owner. KO can:
-  - Place their assets in kiosk.
-  - Withdraw the assets in kiosk if they're not _locked_.
-  - List assets for sale.
-  - Withdraw profits from sales.
-  - Borrow and mutate owned assets in kiosk.
-- Buyer: Buyer can be anyone who's willing to purchase the listed items. The buyers must satisfy the `TransferPolicy` for the trade to be considered successful.
-- Creator: Creator is a party that creates and controls the `TransferPolicy` for a single type. For example, authors of SuiFrens collectibles are the creators of `SuiFren<Capy>` type and act as creators in the Sui Kiosk system. Creators can:
-  - Set any rules for trades.
-  - Set multiple tracks of rules.
-  - Enable or disable trades at any moment with a policy.
-  - Enforce policies (eg royalties) on all trades.
-  - All operations are affected immediately and globally.
+- Kiosk Owner（販売者/KO）：Kiosk Owner になるには `KioskOwnerCap` を所有する必要があります。KO は以下が可能です：
+  - キオスクにアセットを配置する
+  - _ロック_ されていない場合、キオスクのアセットを引き出す
+  - 販売用にアセットを出品する
+  - 販売からの利益を引き出す
+  - キオスク内の所有アセットを借用し変更する
+- 購入者 (Buyer)：購入者は出品されたアイテムを購入する意思のある誰でもなれます。購入者は取引が成功したと見なされるために `TransferPolicy` を満たす必要があります。
+- クリエイター (Creator)：クリエイターは単一の型の `TransferPolicy` を作成・制御する当事者です。例えば、SuiFrens コレクティブルの作者は `SuiFren<Capy>` 型のクリエイターであり、Sui Kiosk システムでクリエイターとして機能します。クリエイターは以下が可能です：
+  - 取引の任意のルールを設定する
+  - 複数のルールトラックを設定する
+  - ポリシーを使用していつでも取引を有効化または無効化する
+  - すべての取引でポリシー（例：ロイヤリティ）を実施する
+  - すべての操作は即座にグローバルに影響します
 
-## Asset States in Sui Kiosk
+## Sui Kiosk でのアセット状態
 
-When you add an asset to your kiosk, it has one of the following states:
+キオスクにアセットを追加すると、以下の状態のいずれかになります：
 
-- `PLACED` - an item is placed inside the kiosk. The Kiosk Owner can withdraw it and use it directly, borrow it (mutably or immutably), or list an item for sale.
-- `LOCKED` - an item is placed and locked in the kiosk. The Kiosk Owner can't withdraw a _locked_ item from kiosk, but you can borrow it mutably and list it for sale.
-- `LISTED` - an item in the kiosk that is listed for sale. The Kiosk Owner can’t modify an item while listed, but you can borrow it immutably or delist it, which returns it to its previous state.
+- `PLACED`（配置済み） - アイテムがキオスク内に配置されています。Kiosk Owner はそれを引き出して直接使用したり、借用（可変または不変）したり、販売用にアイテムを出品したりできます。
+- `LOCKED`（ロック済み） - アイテムがキオスクに配置され、ロックされています。Kiosk Owner はキオスクから*ロック*されたアイテムを引き出すことはできませんが、可変に借用したり、販売用に出品したりできます。
+- `LISTED`（出品済み） - 販売用に出品されているキオスク内のアイテム。Kiosk Owner は出品中にアイテムを変更することはできませんが、不変に借用したり、出品を取り消したりして前の状態に戻すことができます。
 
-_💡Note: there is another state called `LISTED EXCLUSIVELY`, which is not covered in this unit and will be covered in the future in advanced section_
+_💡 注意：`LISTED EXCLUSIVELY`（排他的出品済み）という別の状態がありますが、このユニットではカバーされず、将来の高度なセクションでカバーされます。_

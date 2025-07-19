@@ -1,14 +1,14 @@
-# Marketplace Contract
+# マーケットプレイスコントラクト
 
-Now that we have a solid understanding of how various types of collections and dynamic fields work, we can start writing the contract for an on-chain marketplace that can support the following features:
+さまざまなタイプのコレクションと動的フィールドがどのように動作するかをしっかりと理解したので、以下の機能をサポートするオンチェーンマーケットプレイスのコントラクトを書き始めることができます：
 
-- Listing of arbitrary item types and numbers
-- Accepts payment in a custom or native fungible token type
-- Can concurrently allow multiple sellers to list their items and securely receive payments
+- 任意のアイテムタイプと数量の出品
+- カスタムまたはネイティブファンジブルトークンタイプでの支払い受付
+- 複数の販売者が同時にアイテムを出品し、安全に支払いを受け取ることができる
 
-## Type Definitions
+## 型定義
 
-First, we define the overall `Marketplace` struct:
+まず、全体的な `Marketplace` 構造体を定義します：
 
 ```move
 /// A shared `Marketplace`. Can be created by anyone using the
@@ -21,15 +21,15 @@ public struct Marketplace<phantom COIN> has key {
 }
 ```
 
-`Marketplace` will be a shared object that can be accessed and mutated by anyone. It accepts a `COIN` generic type parameter that defines what [fungible token](../../unit-three/lessons/4_the_coin_resource_and_create_currency.md) type the payments will be accepted in.
+`Marketplace` は誰でもアクセス・変更できる共有オブジェクト (shared object) になります。支払いが受け入れられる[ファンジブルトークン](../../unit-three/lessons/4_the_coin_resource_and_create_currency.md)タイプを定義する `COIN` ジェネリック型パラメータを受け入れます。
 
-The `items` field will hold item listings, which can be different types, thus we use the heterogeneous `Bag` collection here.
+`items` フィールドはアイテムリスティング (item listing) を保持し、これらは異なる型にできるため、ここでは異質な `Bag` コレクションを使用します。
 
-The `payments` field will hold payments received by each seller. This can be represented by a key-value pair with the seller's address as the key and the coin type accepted as the value. Because the types for the key and value here are homogeneous and fixed, we can use the `Table` collection type for this field.
+`payments` フィールドは各販売者が受け取った支払いを保持します。これは販売者のアドレスをキーとし、受け入れられたコインタイプを値とするキーと値のペアで表すことができます。ここでのキーと値の型は同質で固定されているため、このフィールドには `Table` コレクションタイプを使用できます。
 
-_Quiz: How would you modify this struct to accept multiple fungible token types?_
+_クイズ：複数のファンジブルトークンタイプを受け入れるようにこの構造体をどのように変更しますか？_
 
-Next, we define a `Listing` type:
+次に、`Listing` タイプを定義します：
 
 ```move
 /// A single listing that contains the listed item and its
@@ -41,13 +41,13 @@ public struct Listing has key, store {
 }
 ```
 
-This struct holds the information we need related to an item listing. We will attach the actual item to be traded to the `Listing` object as a dynamic object field, eliminating the need to define any item field or collection.
+この構造体は、アイテム出品に関連する必要な情報を保持します。取引される実際のアイテムを動的オブジェクトフィールドとして `Listing` オブジェクトに添付し、アイテムフィールドやコレクションを定義する必要性を排除します。
 
-Note that `Listing` has the `key` ability, so we are now able to use its object id as the key when we place it inside of a collection.
+`Listing` は `key` アビリティを持つため、コレクション内に配置する際にそのオブジェクト ID をキーとして使用できることに注意してください。
 
-## Listing and Delisting
+## 出品と出品取り消し
 
-Next, we write the logic for listing and delisting items. First, listing an item:
+次に、アイテムの出品と出品取り消しのロジックを書きます。まず、アイテムの出品：
 
 ```move
 /// List an item at the Marketplace.
@@ -69,9 +69,9 @@ public fun list<T: key + store, COIN>(
 }
 ```
 
-As mentioned earlier, we will simply use the dynamic object field interface to attach the item of arbitrary type to be sold, and then we add the `Listing` object to the `Bag` of listings, using the object id of the item as the key, and the actual `Listing` object as the value (which is why `Listing` also has the `store` ability).
+前述のとおり、動的オブジェクトフィールドインターフェース (dynamic object field interface) を使用して販売される任意の型のアイテムを添付し、次にアイテムのオブジェクト ID をキーとし、実際の `Listing` オブジェクトを値として（これが `Listing` も `store` アビリティを持つ理由です）、`Listing` オブジェクトをリスティングの `Bag` に追加します。
 
-For delisting, we define the following methods:
+出品取り消しについては、以下のメソッドを定義します：
 
 ```move
 /// Internal function to remove listing and get an item back. Only owner can do
@@ -104,11 +104,11 @@ public fun delist_and_take<T: key + store, COIN>(
 }
 ```
 
-Note how the delisted `Listing` object is unpacked and deleted, and the listed item object is retrieved through [`dof::remove`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move#L59). Remember that Sui assets cannot be destroyed outside of their defining module, so we must transfer the item to the delister.
+出品取り消しされた `Listing` オブジェクトがアンパック・削除され、出品されたアイテムオブジェクトが [`dof::remove`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move#L59) を通じて取得される方法に注意してください。Sui アセットは定義モジュールの外で破棄できないため、アイテムを出品取り消し者に転送する必要があります。
 
-## Purchasing and Payments
+## 購入と支払い
 
-Buying an item is similar to delisting but with additional logic for handling payments.
+アイテムの購入は出品取り消しと似ていますが、支払い処理の追加ロジックがあります。
 
 ```move
 /// Internal function to purchase an item using a known Listing. Payment is done
@@ -155,13 +155,13 @@ public fun buy_and_take<T: key + store, COIN>(
 }
 ```
 
-The first part is the same as delisting an item from listing, but we also check if the payment sent in is the right amount. The second part will insert the payment coin object into our `payments` `Table`, and depending on if the seller already has some balance, it will either do a simple `table::add` or `table::borrow_mut` and `coin::join` to merge the payment to existing balance.
+最初の部分はリスティングからアイテムを出品取り消しするのと同じですが、送信された支払いが正しい金額かもチェックします。2 番目の部分では、支払いコインオブジェクトを `payments` `Table` に挿入し、販売者がすでに残高を持っているかどうかに応じて、シンプルな `table::add` を行うか、`table::borrow_mut` と `coin::join` を行って支払いを既存の残高にマージします。
 
-The entry function `buy_and_take` simply calls `buy` and transfers the purchased item to the buyer.
+エントリー関数 `buy_and_take` は単純に `buy` を呼び出し、購入されたアイテムを購入者に転送します。
 
-### Taking Profit
+### 利益の取得
 
-Lastly, we define methods for sellers to retrieve their balance from the marketplace.
+最後に、販売者がマーケットプレイスから残高を取得するためのメソッドを定義します。
 
 ```move
 /// Internal function to take profits from selling items on the `Marketplace`.
@@ -185,8 +185,8 @@ public fun take_profits_and_keep<COIN>(
 }
 ```
 
-_Quiz: why do we not need to use [Capability](../../unit-two/lessons/6_capability_design_pattern.md) based access control under this marketplace design? Can we implement the capability design pattern here? What property would that give to the marketplace?_
+_クイズ：このマーケットプレイス設計では、なぜ[ケイパビリティ](../../unit-two/lessons/6_capability_design_pattern.md)ベースのアクセス制御を使用する必要がないのでしょうか？ここでケイパビリティデザインパターンを実装できますか？それはマーケットプレイスにどのような特性を与えるでしょうか？_
 
-## Full Contract
+## 完全なコントラクト
 
-You can find the full smart contract for our implementation of a generic marketplace under the [`example_projects/marketplace`](../example_projects/marketplace/sources/marketplace.move) folder.
+汎用マーケットプレイスの実装の完全なスマートコントラクトは、[`example_projects/marketplace`](../example_projects/marketplace/sources/marketplace.move) フォルダの下で確認できます。

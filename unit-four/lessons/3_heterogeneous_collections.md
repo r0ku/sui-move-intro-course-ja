@@ -1,16 +1,16 @@
-# Heterogeneous Collections
+# 異質コレクション (Heterogeneous Collections)
 
-Homogeneous collections like `Vector` and `Table` can work for marketplaces (or other types of applications) where we need to hold a collection of objects of the same type, but what if we need to hold objects of different types, or if we do not know at compile time what types the objects we need to hold are going to be?
+`Vector` や `Table` のような同質コレクション (homogeneous collection) は、同じ型のオブジェクトのコレクションを保持する必要があるマーケットプレイス（または他のタイプのアプリケーション）では機能しますが、異なる型のオブジェクトを保持する必要がある場合や、保持する必要があるオブジェクトの型がコンパイル時にわからない場合はどうでしょうか？
 
-For this type of marketplace, we need to use a _heterogeneous_ collection to hold the items to be sold. Already having done the heavy lifting of understanding dynamic fields, heterogeneous collection in Sui should be very easy to understand. We will look at the `Bag` collection type more closely here.
+このタイプのマーケットプレイスでは、販売されるアイテムを保持するために*異質 (heterogeneous)* コレクションを使用する必要があります。動的フィールドの理解という重労働をすでに終えているので、Sui での異質コレクションは理解しやすいはずです。ここでは `Bag` コレクションタイプをより詳しく見ていきます。
 
-## The `Bag` Type
+## `Bag` タイプ
 
-A `Bag` is a heterogeneous map-like collection. The collection is similar to `Table` in that its keys and values are not stored within the `Bag` value, but instead are stored using Sui's object system. The `Bag` struct acts only as a handle into the object system to retrieve those keys and values.
+`Bag` は異質マップライクコレクションです。このコレクションは、そのキーと値が `Bag` 値内に格納されるのではなく、代わりに Sui のオブジェクトシステムを使用して格納される点で `Table` に似ています。`Bag` 構造体は、それらのキーと値を取得するためのオブジェクトシステムへのハンドルとしてのみ機能します。
 
-### Common `Bag` Operations
+### 一般的な `Bag` 操作
 
-Sample code of common `Bag` operations is included below:
+一般的な `Bag` 操作のサンプルコードを以下に示します：
 
 ```move
 module collection::bag;
@@ -76,4 +76,4 @@ public fun length(bag: &GenericBag): u64 {
 }
 ```
 
-The function signatures for interacting with Bag collections are very similar to the function signatures for interacting with Table collections. The main difference is that you don't need to declare any types when creating a new Bag, and the key-value pairs that you add to a Bag can be of different types.
+Bag コレクションとの相互作用のための関数シグネチャー (function signature) は、Table コレクションとの相互作用のための関数シグネチャーと非常に似ています。主な違いは、新しい Bag を作成する際に型を宣言する必要がなく、Bag に追加するキーと値のペアが異なる型にできることです。

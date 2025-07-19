@@ -1,31 +1,31 @@
-# [Optional] Closed Loop Token Standard
+# 【オプション】クローズドループトークン標準
 
-Closed Loop token is a Sui token standard that allows the contract deployer to define token policies that control how the token can be transferred, spent, minted, etc.
+クローズドループトークン (Closed Loop Token) は、コントラクトデプロイヤーがトークンの転送、使用、ミントなどの方法を制御するトークンポリシーを定義できる Sui トークン標準です。
 
-## Relationship with `Coin` and `Balance`
+## `Coin` と `Balance` との関係
 
 ![Trinity](../images/trinity.png)
 
-## Actions
+## アクション (Action)
 
-### Public
+### パブリック
 
-- `token::keep` - send a Token to the transaction sender
-- `token::join` - join two Tokens
-- `token::split` - split a Token into two, specify the amount to split
-- `token::zero` - create an empty (zero balance) Token
-- `token::destroy_zero` - destroy a Token with zero balance
+- `token::keep` - トランザクション送信者に Token を送信
+- `token::join` - 2 つの Token を結合
+- `token::split` - Token を 2 つに分割、分割する量を指定
+- `token::zero` - 空（残高ゼロ）の Token を作成
+- `token::destroy_zero` - 残高ゼロの Token を破棄
 
-### Protected
+### プロテクテッド (Protected)
 
-- `token::transfer` - transfer a Token to a specified address
-- `token::to_coin` - convert a Token to a Coin
-- `token::from_coin` - convert a Coin to a Token
-- `token::spend` - spend a Token on a specified address
+- `token::transfer` - 指定されたアドレスに Token を転送
+- `token::to_coin` - Token を Coin に変換
+- `token::from_coin` - Coin を Token に変換
+- `token::spend` - 指定されたアドレスで Token を使用
 
-### Action Request
+### アクションリクエスト (Action Request)
 
-Protected actions generate an `ActionRequest` which need to be confirmed.
+プロテクテッドアクションは確認が必要な `ActionRequest` を生成します。
 
 ```move
 public struct ActionRequest<phantom T> {
@@ -49,38 +49,38 @@ public struct ActionRequest<phantom T> {
 }
 ```
 
-## Confirming Action Requests
+## アクションリクエストの確認
 
-There are three ways to confirm an action request.
+アクションリクエストを確認する方法は 3 つあります。
 
-- By `TreasuryCap`
-- By `TokenPolicyCap`
-- Through a defined token policy
+- `TreasuryCap` による確認
+- `TokenPolicyCap` による確認
+- 定義されたトークンポリシーを通じた確認
 
-## Setting Up Token Policy
+## トークンポリシーの設定
 
-- Create a Coin through `coin::create_currency`
-- Create a policy for the respective token through `token::new_policy`
-- Share the `TokenPolicy` Object
-- Create the respective rules for any or all action types
-- Register, modify, or remove the rules from `TokenPolicy`
+- `coin::create_currency` を通じて Coin を作成
+- `token::new_policy` を通じて該当トークンのポリシーを作成
+- `TokenPolicy` オブジェクトを共有
+- いずれかまたはすべてのアクションタイプに対して該当ルールを作成
+- `TokenPolicy` からルールを登録、変更、または削除
 
-### Hierarchy
+### 階層
 
 `Coin/Token Type` -> `TokenPolicy` -> `Rules`
 
-## Parity Token Example
+## パリティトークンの例
 
-This is a simple closed loop token example illustrating how token policy can be defined and used.
+これは、トークンポリシーがどのように定義され使用されるかを示すシンプルなクローズドループトークンの例です。
 
-The example allows minting in odd parity amounts of the token only.
+この例では、トークンの奇数パリティ量でのみミントを許可します。
 
-### Defining and Adding Token Policy
+### トークンポリシーの定義と追加
 
-The specific token policy is defined in the [parity_rule.move](../example_projects/closed_loop_token/sources/parity_rule.move) contract.
+特定のトークンポリシーは[parity_rule.move](../example_projects/closed_loop_token/sources/parity_rule.move)コントラクトで定義されています。
 
-Then this rule is added to the defined `PARITY` token in the `init` function of the [parity.move](../example_projects/closed_loop_token/sources/parity.move) contract.
+その後、このルールは[parity.move](../example_projects/closed_loop_token/sources/parity.move)コントラクトの `init` 関数で定義された `PARITY` トークンに追加されます。
 
-### Full Contract
+### 完全なコントラクト
 
-The full Parity Token example project is provided here: [Parity Token](../example_projects/closed_loop_token/)
+完全なパリティトークンサンプルプロジェクトはこちらで提供されています：[Parity Token](../example_projects/closed_loop_token/)

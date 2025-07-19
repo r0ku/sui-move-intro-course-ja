@@ -1,52 +1,52 @@
-# Types of Ownership of Sui Objects
+# Sui オブジェクトの所有権の種類
 
-Each object in Sui has an owner field that indicates how this object is being owned. In Sui Move, there are a total of four types of ownership.
+Sui の各オブジェクトは、このオブジェクトがどのように所有されているかを示す owner（所有者）フィールドを持っています。Sui Move には、合計 4 つの所有権の種類があります。
 
-- Owned
-  - Owned by an address
-  - Owned by another object
-- Shared
-  - Shared immutable
-  - Shared mutable
+- 所有 (Owned)
+  - アドレスによる所有
+  - 別のオブジェクトによる所有
+- 共有 (Shared)
+  - 共有不変 (shared immutable)
+  - 共有可変 (shared mutable)
 
-## Owned Objects
+## 所有オブジェクト (Owned Object)
 
-The first two types of ownership fall under the `Owned Objects` category. Owned objects in Sui are processed differently from shared objects and do not require global ordering.
+最初の 2 つの所有権タイプは `所有オブジェクト (Owned Object)` カテゴリに分類されます。Sui での所有オブジェクトは共有オブジェクトとは異なって処理され、グローバル順序付け (global ordering) を必要としません。
 
-### Owned by an Address
+### アドレスによる所有
 
-Let's continue using our `transcript` example here. This type of ownership is pretty straightforward as the object is owned by an address to which the object is transferred upon object creation, such as in the above example at this line:
+ここでも引き続き `transcript` の例を使用しましょう。この種類の所有権は非常に分かりやすく、オブジェクトの作成時にオブジェクトが転送されるアドレスによってオブジェクトが所有されます。上記の例では以下の行のようになります：
 
 ```move
 transfer::transfer(transcript_object, ctx.sender()) // where ctx.sender() is the recipient
 ```
 
-where the `transcript_object` is transferred to the address of the transaction sender upon creation.
+ここで `transcript_object` は作成時にトランザクション送信者のアドレスに転送されます。
 
-### Owned by An Object
+### オブジェクトによる所有
 
-In order for an object to be owned by another object, it is done using `dynamic_object_field`, which we will explore in a future section. Basically, when an object is owned by another object, we will call it a child object. A child object is able to be looked up in global storage using its object ID.
+オブジェクトが別のオブジェクトによって所有されるためには、`dynamic_object_field` を使用して行われます。これについては将来のセクションで詳しく説明します。基本的に、オブジェクトが別のオブジェクトによって所有される場合、それを子オブジェクト (child object) と呼びます。子オブジェクトは、そのオブジェクト ID を使用してグローバルストレージで検索できます。
 
-## Shared Objects
+## 共有オブジェクト (Shared Object)
 
-## Shared Immutable Objects
+## 共有不変オブジェクト (Shared Immutable Object)
 
-Certain objects in Sui cannot be mutated by anyone, and because of this, these objects do not have an exclusive owner. All published packages and modules in Sui are immutable objects.
+Sui の特定のオブジェクトは誰によっても変更できず、このため、これらのオブジェクトは排他的な所有者を持ちません。Sui で公開されたすべてのパッケージとモジュールは不変オブジェクト (immutable object) です。
 
-To make an object immutable manually, one can call the following special function:
+オブジェクトを手動で不変にするには、以下の特別な関数を呼び出すことができます：
 
 ```move
 transfer::freeze_object(obj);
 ```
 
-## Shared Mutable Objects
+## 共有可変オブジェクト (Shared Mutable Object)
 
-Shared objects in Sui can be read or mutated by anyone. Shared object transactions require global ordering through a consensus layer protocol, unliked owned objects.
+Sui の共有オブジェクトは誰でも読み取りまたは変更できます。共有オブジェクトのトランザクションは、所有オブジェクトとは異なり、コンセンサス層プロトコル (consensus layer protocol) を通じたグローバル順序付けを必要とします。
 
-To create a shared object, one can call this method:
+共有オブジェクトを作成するには、このメソッドを呼び出すことができます：
 
 ```move
 transfer::share_object(obj);
 ```
 
-Once an object is shared, it stays mutable and can be accessed by anyone to send a transaction to mutate the object.
+オブジェクトが共有されると、それは可変状態のままとなり、誰でもアクセスしてオブジェクトを変更するトランザクションを送信できます。

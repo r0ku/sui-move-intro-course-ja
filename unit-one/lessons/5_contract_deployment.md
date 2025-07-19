@@ -1,68 +1,67 @@
-# Contract Deployment and Hello World Demo
+# コントラクトデプロイメントと Hello World デモ
 
-## The Complete Hello World Sample Project
+## 完全な Hello World サンプルプロジェクト
 
-You can find the complete Hello World project in [this directory](../example_projects/hello_world). 
+完全な Hello World プロジェクトは[このディレクトリ](../example_projects/hello_world)で確認できます。
 
-## Deploying the Contract
+## コントラクトのデプロイ (Deploy)
 
-We will use the Sui CLI to deploy the package to the Sui network. You can deploy it to either the Sui devnet, testnet, or 
-the local node. Just set the Sui CLI to the respective network and have enough tokens to pay for gas. 
+Sui CLI を使用してパッケージを Sui ネットワークにデプロイします。Sui の devnet、testnet、またはローカルノードのいずれにもデプロイできます。Sui CLI を該当のネットワークに設定し、ガス代を支払うのに十分なトークンを持っているだけです。
 
-The Sui CLI command for deploying the package is the following:
+パッケージをデプロイするための Sui CLI コマンドは以下の通りです：
 
 ```bash
-sui client publish [absolute file path to the package that needs to be published]
+sui client publish [公開する必要があるパッケージへの絶対ファイルパス]
 ```
 
-If the absolute file path to the package is not provided, it will default to `.` or the current directory. 
+パッケージへの絶対ファイルパスが提供されない場合、`.` または現在のディレクトリがデフォルトになります。
 
-The output should look something like this if the contract was successfully deployed:
+コントラクトが正常にデプロイされた場合、出力は以下のようになります：
 
 ![Publish Output](../images/publish.png)
 
-The object ID under the `Published Objects` section is the object ID of the Hello World package we just published.
+`Published Objects` セクションのオブジェクト ID は、今公開した Hello World パッケージのオブジェクト ID です。
 
-Let's export that to a variable. 
-
-```bash
-export PACKAGE_ID=<package object ID from previous output>
-```
-
-## Calling a Method through a Transaction
-
-Next, we want to mint a Hello World object by calling the `mint` function in the smart contract we just deployed.
-
-Note that we are able to do this because `mint` is an entry function. 
-
-The command for this using Sui CLI is:
+これを変数にエクスポートしましょう。
 
 ```bash
-sui client call --function mint --module hello_world --package $PACKAGE_ID 
+export PACKAGE_ID=<前の出力からのパッケージオブジェクトID>
 ```
 
-The console output should look like this if the `mint` function was successfully called and a Hello World object was created and transferred:
+## トランザクションを通じたメソッド呼び出し
+
+次に、今デプロイしたスマートコントラクトの `mint` 関数を呼び出して Hello World オブジェクトをミントしたいと思います。
+
+`mint` がエントリー関数 (entry function) であるため、これができることに注意してください。
+
+Sui CLI を使用したコマンドは以下の通りです：
+
+```bash
+sui client call --function mint --module hello_world --package $PACKAGE_ID
+```
+
+`mint` 関数が正常に呼び出され、Hello World オブジェクトが作成・転送された場合、コンソール出力は以下のようになります：
 
 ![Mint Output](../images/mint.png)
 
-The object ID under the `Created Objects` section of the output is the ID of the Hello World object.
+出力の `Created Objects` セクションのオブジェクト ID は、Hello World オブジェクトの ID です。
 
-## Viewing the Object with Sui Explorer
+## Sui Explorer でのオブジェクト表示
 
-Let's use the [Sui Explorer](https://suiexplorer.com/) to view the Hello World object we just created and transferred.
+[Sui Explorer](https://suiexplorer.com/)を使用して、今作成・転送した Hello World オブジェクトを表示しましょう。
 
-Choose the network you are using through the dropdown menu on the upper right. 
+右上のドロップダウンメニューから使用しているネットワークを選択してください。
 
-If you are using a local dev node, select the `Custom RPC URL` option and enter:
+ローカル開発ノードを使用している場合は、`Custom RPC URL` オプションを選択して以下を入力してください：
 
 ```bash
 http://127.0.0.1:9000
 ```
 
-Search for the object ID from the output of the previous transaction and you should be able to find the object on the explorer:
+前のトランザクションの出力からオブジェクト ID を検索すると、エクスプローラーでオブジェクトを見つけることができます：
 
 ![Explorer Output](../images/explorer.png)
 
-You should see the text "Hello World!" under the object's properties. 
+オブジェクトのプロパティの下に「Hello World!」というテキストが表示されます。
 
-Great job, this concludes the first unit of the course.
+お疲れさまでした。これでコースの最初のユニットが完了です。

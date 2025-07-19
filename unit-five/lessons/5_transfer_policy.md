@@ -1,12 +1,12 @@
-# Transfer Policy and Buy from Kiosk
+# TransferPolicy と Kiosk からの購入
 
-In this section, we will learn how to create a `TransferPolicy` and use it to enforce rules the buyers must comply before the purchased item is owned by them.
+このセクションでは、`TransferPolicy` を作成し、購入されたアイテムが購入者によって所有される前に購入者が準拠しなければならないルールを実施するために使用する方法を学びます。
 
 ## `TransferPolicy`
 
-### Create a `TransferPolicy`
+### `TransferPolicy` の作成
 
-`TransferPolicy` for type `T` must be created for that type `T` to be tradeable in the Kiosk system. `TransferPolicy` is a shared object acting as a central authority enforcing everyone to check their purchase is valid against the defined policy before the purchased item is transferred to the buyers.
+型 `T` の `TransferPolicy` は、その型 `T` が Kiosk システムで取引可能になるために作成されなければなりません。`TransferPolicy` は、購入されたアイテムが購入者に転送される前に、購入が定義されたポリシーに対して有効であることをすべての人にチェックすることを強制する中央権威として機能する共有オブジェクトです。
 
 ```move
 use sui::transfer_policy::{Self, TransferRequest, TransferPolicy, TransferPolicyCap};
@@ -28,36 +28,36 @@ public fun new_policy(publisher: &Publisher, ctx: &mut TxContext) {
 }
 ```
 
-Create a `TransferPolicy<T>` requires the proof of publisher `Publisher` of the module comprising `T`. This ensures only the creator of type `T` can create `TransferPolicy<T>`. There are 2 ways to create the policy:
+`TransferPolicy<T>` の作成には、`T` を含むモジュールの公開者証明 `Publisher` が必要です。これにより、型 `T` の作成者のみが `TransferPolicy<T>` を作成できることが保証されます。ポリシーを作成する方法は 2 つあります：
 
-- Use `transfer_policy::new()` to create new policy, make the `TransferPolicy` shared object and transfer the `TransferPolicyCap` to the sender by using `sui::transfer`.
+- `transfer_policy::new()` を使用して新しいポリシーを作成し、`TransferPolicy` を共有オブジェクトにし、`sui::transfer` を使用して `TransferPolicyCap` を送信者に転送する。
 
 ```bash
 sui client call --package $KIOSK_PACKAGE_ID --module kiosk --function new_policy --args $KIOSK_PUBLISHER
 ```
 
-- Use `entry transfer_policy::default()` to automatically do all above steps for us.
+- `entry transfer_policy::default()` を使用して、上記のすべてのステップを自動的に実行する。
 
-You should already receive the `Publisher` object when publish the package. Let's export it for later use.
-
-```bash
-export KIOSK_PUBLISHER=<Publisher object ID>
-```
-
-You should see the newly created `TransferPolicy` object and `TransferPolicyCap` object in the terminal. Let's export it for later use.
+パッケージを公開する際に `Publisher` オブジェクトをすでに受け取っているはずです。後で使用するためにエクスポートしましょう。
 
 ```bash
-export KIOSK_TRANSFER_POLICY=<TransferPolicy object ID>
-export KIOSK_TRANSFER_POLICY_CAP=<TransferPolicyCap object ID>
+export KIOSK_PUBLISHER=<PublisherオブジェクトID>
 ```
 
-### Implement Fixed Fee Rule
+ターミナルで新しく作成された `TransferPolicy` オブジェクトと `TransferPolicyCap` オブジェクトが表示されるはずです。後で使用するためにエクスポートしましょう。
 
-`TransferPolicy` doesn't enforce anything without any rule, let's learn how to implement a simple rule in a separated module to enforce users to pay a fixed royalty fee for a trade to succeed.
+```bash
+export KIOSK_TRANSFER_POLICY=<TransferPolicyオブジェクトID>
+export KIOSK_TRANSFER_POLICY_CAP=<TransferPolicyCapオブジェクトID>
+```
 
-_💡Note: There is a standard approach to implement the rules. Please checkout the [rule template here](../example_projects/kiosk/sources/dummy_policy.move)_
+### 固定料金ルールの実装
 
-#### Rule Witness & Rule Config
+`TransferPolicy` はルールなしでは何も実施しません。取引を成功させるためにユーザーに固定ロイヤリティ料金の支払いを強制する簡単なルールを別のモジュールで実装する方法を学びましょう。
+
+_💡 注意：ルールを実装するための標準的なアプローチがあります。[こちらのルールテンプレート](../example_projects/kiosk/sources/dummy_policy.move)をチェックしてください。_
+
+#### ルールウィットネスとルール設定
 
 ```move
 module kiosk::fixed_royalty_rule;
@@ -82,9 +82,9 @@ public struct Config has store, drop {
 }
 ```
 
-`Rule` represents a witness type to add to `TransferPolicy`, it helps to identify and distinguish between multiple rules adding to one policy. `Config` is the configuration of the `Rule`, as we implement fixed royaltee fee, the settings should include the percentage we want to deduct out of original payment.
+`Rule` は `TransferPolicy` に追加するウィットネス型を表し、1 つのポリシーに追加される複数のルール間を識別し区別するのに役立ちます。`Config` は `Rule` の設定で、固定ロイヤリティ料金を実装するため、設定には元の支払いから差し引きたいパーセンテージを含める必要があります。
 
-#### Add Rule to TransferPolicy
+#### TransferPolicy へのルール追加
 
 ```move
 /// Function that adds a Rule to the `TransferPolicy`.
@@ -107,15 +107,15 @@ public fun add<T>(
 }
 ```
 
-We use `transfer_policy::add_rule()` to add the rule with its configuration to the policy.
+`transfer_policy::add_rule()` を使用して、ルールとその設定をポリシーに追加します。
 
-Let's execute this function from the client to add the `Rule` to the `TransferPolicy`, otherwise, it is disabled. In this example, we configure the percentage of royalty fee is `0.1%` ~ `10 basis points` and the minimum amount royalty fee is `100 MIST`.
+クライアントからこの関数を実行して `Rule` を `TransferPolicy` に追加しましょう。そうしなければ無効化されています。この例では、ロイヤリティ料金のパーセンテージを `0.1%` ～ `10 ベーシスポイント` に設定し、最小ロイヤリティ料金を `100 MIST` に設定します。
 
 ```bash
 sui client call --package $KIOSK_PACKAGE_ID --module fixed_royalty_rule --function add --args $KIOSK_TRANSFER_POLICY $KIOSK_TRANSFER_POLICY_CAP 10 100 --type-args $KIOSK_PACKAGE_ID::kiosk::TShirt
 ```
 
-#### Satisfy the Rule
+#### ルールの満足
 
 ```move
 /// Buyer action: Pay the royalty fee for the transfer.
@@ -153,11 +153,11 @@ public fun fee_amount<T: key + store>(
 }
 ```
 
-We need a helper `fee_amount()` to calculate the royalty fee given the policy and the payment amount. We use `transfer_policy::get_rule()` to enquire the configuration and use it for fee calculation.
+ポリシーと支払い額を与えられたロイヤリティ料金を計算するヘルパー `fee_amount()` が必要です。`transfer_policy::get_rule()` を使用して設定を照会し、料金計算に使用します。
 
-`pay()` is a function that users must call themselves to fulfill the `TransferRequest` (described in the next section) before `transfer_policy::confirm_request()`. `transfer_policy::paid()` gives us original payment of the trade represented by `TransferRequest`. After royalty fee calculation, we will add the fee to the policy through `transfer_policy::add_to_balance()`, any fee collected by the policy is accumulated here and `TransferPolicyCap` owner can withdraw later. Last but not least, we use `transfer_policy::add_receipt()` to flag the `TransferRequest` that this rule is passed and ready to be confirmed with `transfer_policy::confirm_request()`.
+`pay()` は、`transfer_policy::confirm_request()` の前に `TransferRequest`（次のセクションで説明）を満たすためにユーザー自身が呼び出さなければならない関数です。`transfer_policy::paid()` は `TransferRequest` によって表される取引の元の支払いを提供します。ロイヤリティ料金計算後、`transfer_policy::add_to_balance()` を通じてポリシーに料金を追加します。ポリシーによって回収されたすべての料金はここに蓄積され、`TransferPolicyCap` 所有者は後で引き出すことができます。最後に、`transfer_policy::add_receipt()` を使用して、このルールが通過し `transfer_policy::confirm_request()` で確認される準備ができていることを `TransferRequest` にフラグを立てます。
 
-## Buy Item from Kiosk
+## Kiosk からのアイテム購入
 
 ```move
 use sui::transfer_policy::{Self, TransferRequest, TransferPolicy};
@@ -180,23 +180,23 @@ public fun confirm_request(
 }
 ```
 
-When buyers buy the asset by using `kiosk::purchase()` API, an item is returned alongside with a `TransferRequest`. `TransferRequest` is a hot potato forcing us to consume it through `transfer_policy::confirm_request()`. `transfer_policy::confirm_request()`'s job is to verify whether all the rules configured and enabled in the `TransferPolicy` are complied by the users. If one of the enabled rules are not satisfied, then `transfer_policy::confirm_request()` throws error leading to the failure of the transaction. As a consequence, the item is not under your ownership even if you tried to transfer the item to your account before `transfer_policy::confirm_request()`.
+購入者が `kiosk::purchase()` API を使用してアセットを購入すると、アイテムが `TransferRequest` と一緒に返されます。`TransferRequest` は `transfer_policy::confirm_request()` を通じてそれを消費することを強制するホットポテトです。`transfer_policy::confirm_request()` の仕事は、`TransferPolicy` で設定・有効化されたすべてのルールがユーザーによって準拠されているかを検証することです。有効化されたルールのいずれかが満たされていない場合、`transfer_policy::confirm_request()` はエラーを投げ、トランザクションの失敗につながります。結果として、`transfer_policy::confirm_request()` の前にアイテムをアカウントに転送しようとしても、アイテムはあなたの所有下にありません。
 
-_💡Note: The users must compose a PTB with all necessary calls to ensure the TransferRequest is valid before `confirm_request()` call._
+_💡 注意：ユーザーは `confirm_request()` 呼び出しの前に TransferRequest が有効であることを保証するために、必要なすべての呼び出しで PTB を構成する必要があります。_
 
-The flow can be illustrated as follow:
+フローは以下のように図示できます：
 
-_Buyer -> `kiosk::purchase()` -> `Item` + `TransferRequest` -> Subsequent calls to fulfill `TransferRequest` -> `transfer_policy::confirm_request()` -> Transfer `Item` under ownership_
+_購入者 -> `kiosk::purchase()` -> `アイテム` + `TransferRequest` -> TransferRequest を満たすための後続の呼び出し -> `transfer_policy::confirm_request()` -> 所有権下でのアイテム転送_
 
-## Kiosk Full Flow Example
+## Kiosk 完全フローの例
 
-Recall from the previous section, the item must be placed inside the kiosk, then it must be listed to become sellable. Assuming the item is already listed with price `10_000 MIST`, let's export the listed item as terminal variable.
+前のセクションから、アイテムはキオスク内に配置され、販売可能になるために出品されなければならないことを思い出してください。アイテムがすでに価格 `10_000 MIST` で出品されていると仮定して、出品されたアイテムをターミナル変数としてエクスポートしましょう。
 
 ```bash
-export KIOSK_TSHIRT=<Object ID of the listed TShirt>
+export KIOSK_TSHIRT=<出品されたTShirtのオブジェクトID>
 ```
 
-Let's build a PTB to execute a trade. The flow is straightforward, we buy the listed item from the kiosk, the item and `TransferRequest` is returned, then, we call `fixed_royalty_fee::pay` to fulfill the `TransferRequest`, we confirm the `TransferRequest` with `confirm_request()` before finally transfer the item to the buyer.
+取引を実行するための PTB を構築しましょう。フローは簡単で、キオスクから出品されたアイテムを購入し、アイテムと `TransferRequest` が返され、次に `fixed_royalty_fee::pay` を呼び出して `TransferRequest` を満たし、最終的にアイテムを購入者に転送する前に `confirm_request()` で `TransferRequest` を確認します。
 
 ```bash
 sui client ptb \
@@ -211,6 +211,6 @@ sui client ptb \
 --assign coin \
 --move-call $KIOSK_PACKAGE_ID::fixed_royalty_rule::pay "<$KIOSK_PACKAGE_ID::kiosk::TShirt>" @$KIOSK_TRANSFER_POLICY buy_res.1 coin.0 \
 --move-call $KIOSK_PACKAGE_ID::kiosk::confirm_request  @$KIOSK_TRANSFER_POLICY buy_res.1 \
---move-call 0x2::transfer::public_transfer "<$KIOSK_PACKAGE_ID::kiosk::TShirt>" buy_res.0 <buyer address> \
+--move-call 0x2::transfer::public_transfer "<$KIOSK_PACKAGE_ID::kiosk::TShirt>" buy_res.0 <購入者アドレス> \
 
 ```

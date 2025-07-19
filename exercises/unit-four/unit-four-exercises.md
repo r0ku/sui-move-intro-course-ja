@@ -1,11 +1,11 @@
-# Unit Four Exercises
+# Unit Four 演習問題
 
-## Q1
+## 問 1
 
-Implement the locked_coin example from Unit Three but utilize a shared object as a repository instead of sending the lockers to the recipients directly.
+Unit Three の locked_coin の例を実装しますが、ロッカーを受信者に直接送信する代わりに、共有オブジェクトをリポジトリとして利用してください。
 
-_Hint 1: What features introduced in this unit can be utilized to "attach" the lockers to the shared repository?_
+_ヒント 1：このユニットで紹介された機能のうち、ロッカーを共有リポジトリに「アタッチ」するために利用できるものは何ですか？_
 
-_Hint 2: Make sure you are enforcing access control when users are withdrawing the vested portion of their funds._
+_ヒント 2：ユーザーが確定した資金の一部を引き出す際に、アクセス制御を強制していることを確認してください。_
 
-## Q2
+## 問 2

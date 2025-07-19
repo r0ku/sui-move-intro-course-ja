@@ -1,5 +1,5 @@
-# Unit Four Exercises Answer Key
+# Unit Four 演習問題解答キー
 
-## Q1
+## 問 1
 
-Example `locked_coin` implementation using dynamic fields to attach to a shared repository: [locked_coin_df.move](./locked_coin_df.move)
+共有リポジトリにアタッチするために動的フィールドを使用した `locked_coin` 実装例：[locked_coin_df.move](./locked_coin_df.move)

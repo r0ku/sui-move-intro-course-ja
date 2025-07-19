@@ -1,125 +1,125 @@
-# Setup Development Environment
+# 開発環境のセットアップ
 
-Welcome to the Sui Move introduction course. In this first unit, we will walk you through the process of setting up the development environment for working with Sui Move, and create a basic Hello World project as a gentle introduction into the world of Sui.
+Sui Move 入門コースへようこそ。この最初のユニットでは、Sui Move での開発環境のセットアップ過程を説明し、Sui の世界への優しい入門として基本的な Hello World プロジェクトを作成します。
 
-## Install Sui
+## Sui のインストール
 
-Move is a compiled language, so you need to install a compiler to be able to write and run Move programs. The compiler is included into the Sui binary, which can be installed or downloaded using one of the methods below.
+Move はコンパイル言語なので、Move プログラムを書いて実行するためにはコンパイラーをインストールする必要があります。コンパイラーは Sui バイナリに含まれており、以下のいずれかの方法でインストールまたはダウンロードできます。
 
-### Installing via suiup (Recommended)
+### suiup を使用したインストール（推奨）
 
-The best way to install Sui is by using `suiup`. It provides a simple way to install binaries and to manage different versions of binaries for different environments (e.g. testnet and mainnet).
+Sui をインストールする最良の方法は `suiup` を使用することです。これにより、バイナリのインストールと、異なる環境（例：testnet と mainnet）用の異なるバージョンのバイナリの管理が簡単になります。
 
-Installation instructions for `suiup` can be found in the [repository README](https://github.com/MystenLabs/suiup).
+`suiup` のインストール手順は[リポジトリの README](https://github.com/MystenLabs/suiup)で確認できます。
 
-To install Sui, run the following command:
+Sui をインストールするには、以下のコマンドを実行してください：
 
 ```bash
 suiup install sui
 ```
 
-### Download Binary
+### バイナリのダウンロード
 
-You can download the latest Sui binary from the [releases page](https://github.com/MystenLabs/sui/releases). The binary is available for macOS, Linux and Windows. For education purposes and development, we recommend using the mainnet version.
+最新の Sui バイナリを[リリースページ](https://github.com/MystenLabs/sui/releases)からダウンロードできます。バイナリは macOS、Linux、Windows 向けに利用可能です。教育目的と開発では、mainnet バージョンの使用を推奨します。
 
-### Install Using Homebrew (macOS)
+### Homebrew を使用したインストール（macOS）
 
-You can install Sui using the Homebrew package manager.
+Homebrew パッケージマネージャーを使用して Sui をインストールできます。
 
 ```bash
 brew install sui
 ```
 
-### Install Using Chocolatey (Windows)
+### Chocolatey を使用したインストール（Windows）
 
-You can install Sui using the Chocolatey package manager for Windows.
+Windows 向けの Chocolatey パッケージマネージャーを使用して Sui をインストールできます。
 
 ```bash
 choco install sui
 ```
 
-### Build Using Cargo (macOS, Linux)
+### Cargo を使用したビルド（macOS、Linux）
 
-You can install and build Sui locally by using the Cargo package manager (requires Rust)
+Cargo パッケージマネージャー（Rust が必要）を使用して Sui をローカルでインストール・ビルドできます。
 
 ```bash
 cargo install --git https://github.com/MystenLabs/sui.git sui --branch mainnet
 ```
 
-Change the branch target here to `testnet` or `devnet` if you are targeting one of those.
+testnet や devnet を対象とする場合は、ここでブランチターゲットを `testnet` または `devnet` に変更してください。
 
-Make sure that your system has the latest Rust versions with the command below.
+以下のコマンドでシステムに最新の Rust バージョンがあることを確認してください。
 
 ```bash
 rustup update stable
 ```
 
-### Verify Installation
+### インストールの確認
 
-Check binaries are installed successfully:
+バイナリが正常にインストールされたか確認してください：
 
 ```bash
 sui --version
 ```
 
-You should see the version number in the terminal if sui binaries were installed successfully.
+sui バイナリが正常にインストールされていれば、ターミナルにバージョン番号が表示されます。
 
-### Troubleshooting
+### トラブルシューティング
 
-For troubleshooting the installation process, please refer to the [Install Sui Guide](https://docs.sui.io/build/install).
+インストールプロセスのトラブルシューティングについては、[Sui インストールガイド](https://docs.sui.io/build/install)を参照してください。
 
-## Using a Docker Image with Pre-installed Sui Binaries
+## Sui バイナリがプリインストールされた Docker イメージの使用
 
-1. [Install Docker](https://docs.docker.com/get-docker/)
+1. [Docker をインストール](https://docs.docker.com/get-docker/)
 
-2. Pull Sui official docker image
+2. Sui 公式 docker イメージをプル
 
    `docker pull mysten/sui-tools:devnet`
 
-3. Start and shell into the Docker container:
+3. Docker コンテナを開始してシェルにアクセス：
 
    `docker run --name suidevcontainer -itd mysten/sui-tools:devnet`
 
    `docker exec -it suidevcontainer bash`
 
-_💡Note: If the above Docker image is not compatible with your CPU architecture, you can start with a base [Rust](https://hub.docker.com/_/rust) Docker image appropriate for your CPU architecture, and install the Sui binaries and prerequisites as described above.\_
+_💡 注意：上記の Docker イメージがお使いの CPU アーキテクチャと互換性がない場合は、お使いの CPU アーキテクチャに適したベース[Rust](https://hub.docker.com/_/rust) Docker イメージから始めて、上記の説明に従って Sui バイナリと前提条件をインストールできます。\_
 
-## (Optional) Configure VS Code with Move Analyzer Plug-in
+## （オプション）Move Analyzer プラグイン (Plug-in) で VS Code を設定
 
-1. Install [Move Analyzer plugin](https://marketplace.visualstudio.com/items?itemName=move.move-analyzer) from VS Marketplace
+1. VS Marketplace から[Move Analyzer プラグイン](https://marketplace.visualstudio.com/items?itemName=move.move-analyzer)をインストール
 
-2. Add compatibility for Sui style wallet addresses:
+2. Sui スタイルのウォレットアドレス (wallet address) の互換性を追加：
 
    `cargo install --git https://github.com/move-language/move move-analyzer --features "address20"`
 
-## Sui CLI Basic Usage
+## Sui CLI 基本的な使用方法
 
-[Reference Page](https://docs.sui.io/build/cli-client)
+[リファレンスページ](https://docs.sui.io/build/cli-client)
 
-### Initialization
+### 初期化
 
-- Enter `Y` for `do you want to connect to a Sui Full node server?` and press `Enter` to default to Sui Devnet full node
-- Enter `0` for key scheme selection to choose [`ed25519`](https://ed25519.cr.yp.to/)
+- `do you want to connect to a Sui Full node server?` に対して `Y` を入力し、`Enter`を押して Sui Devnet フルノード (full node) にデフォルト接続
+- キースキーム (key scheme) 選択で `0` を入力して[`ed25519`](https://ed25519.cr.yp.to/)を選択
 
-### Managing Networks
+### ネットワーク管理
 
-- Switching network: `sui client switch --env [network alias]`
-- Default network aliases:
+- ネットワーク切り替え: `sui client switch --env [network alias]`
+- デフォルトネットワークエイリアス (alias):
   - localnet: http://0.0.0.0:9000
   - devnet: https://fullnode.devnet.sui.io:443
-- List all current network aliases: `sui client envs`
-- Add new network alias: `sui client new-env --alias <ALIAS> --rpc <RPC>`
-  - Try adding a testnet alias with: `sui client new-env --alias testnet --rpc https://fullnode.testnet.sui.io:443`
+- 現在のすべてのネットワークエイリアスのリスト: `sui client envs`
+- 新しいネットワークエイリアスの追加: `sui client new-env --alias <ALIAS> --rpc <RPC>`
+  - 次のコマンドで testnet エイリアスの追加を試してください: `sui client new-env --alias testnet --rpc https://fullnode.testnet.sui.io:443`
 
-### Check Active Address and Gas Objects
+### アクティブアドレスとガスオブジェクト (Gas Object) の確認
 
-- Check current addresses in key store: `sui client addresses`
-- Check active-address: `sui client active-address`
-- List all controlled gas objects: `sui client gas`
+- キーストア (key store) の現在のアドレス確認: `sui client addresses`
+- アクティブアドレス確認: `sui client active-address`
+- 制御されているすべてのガスオブジェクトのリスト: `sui client gas`
 
-## Get Devnet or Testnet Sui Tokens
+## Devnet または Testnet Sui トークンの取得
 
-1. [Join Sui Discord](https://discord.gg/sui)
-2. Complete verification steps
-3. Enter [`#devnet-faucet`](https://discord.com/channels/916379725201563759/971488439931392130) channel for devnet tokens, or [`#testnet-faucet`](https://discord.com/channels/916379725201563759/1037811694564560966) channel for testnet tokens
-4. Type `!faucet <WALLET ADDRESS>`
+1. [Sui Discord に参加](https://discord.gg/sui)
+2. 認証ステップを完了
+3. devnet トークン用の[`#devnet-faucet`](https://discord.com/channels/916379725201563759/971488439931392130)チャンネル、または testnet トークン用の[`#testnet-faucet`](https://discord.com/channels/916379725201563759/1037811694564560966)チャンネルに入る
+4. `!faucet <WALLET ADDRESS>`と入力

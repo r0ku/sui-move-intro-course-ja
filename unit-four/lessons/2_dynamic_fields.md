@@ -1,17 +1,17 @@
-# Dynamic Fields
+# 動的フィールド (Dynamic Fields)
 
-To peek under how collections like `Table` are actually implemented in Sui Move, we need to introduce the concept of dynamic fields in Sui Move. Dynamic fields are heterogeneous fields that can be added or removed at runtime, and can have arbitrary user-assigned names.
+`Table` などのコレクションが Sui Move で実際にどのように実装されているかを詳しく理解するには、Sui Move の動的フィールド (dynamic field) の概念を紹介する必要があります。動的フィールドは、実行時に追加または削除でき、任意のユーザー指定名を持つことができる異質フィールド (heterogeneous field) です。
 
-There are two sub-types of dynamic fields:
+動的フィールドには 2 つのサブタイプがあります：
 
-- **Dynamic Fields** can store any value that has the `store` ability, however, an object stored in this kind of field will be considered wrapped and will not be accessible directly via its ID by external tools (explorers, wallets, etc) accessing storage.
-- **Dynamic Object Fields** values _must_ be Sui objects (have the `key` and `store` abilities, and `id: UID` as the first field), but will still be directly accessible via their object ID after being attached.
+- **動的フィールド (Dynamic Fields)** は `store` アビリティを持つ任意の値を格納できますが、この種のフィールドに格納されたオブジェクトはラップされたと見なされ、ストレージにアクセスする外部ツール（エクスプローラー、ウォレットなど）によってその ID を介して直接アクセスすることはできません。
+- **動的オブジェクトフィールド (Dynamic Object Fields)** の値は Sui オブジェクト（`key` と `store` のアビリティを持ち、最初のフィールドとして `id: UID` を持つ）でなければ*なりませんが*、アタッチ後もそのオブジェクト ID を介して直接アクセス可能です。
 
-## Dynamic Field Operations
+## 動的フィールド操作
 
-### Adding a Dynamic Field
+### 動的フィールドの追加
 
-To illustrate how to work with dynamic fields, we define the following structs:
+動的フィールドの操作方法を説明するために、以下の構造体を定義します：
 
 ```move
 // Parent struct
@@ -31,7 +31,7 @@ public struct DOFChild has key, store {
 }
 ```
 
-Here's the API to use for adding **dynamic fields** or **dynamic object fields** to an object:
+オブジェクトに**動的フィールド**または**動的オブジェクトフィールド**を追加するための API は以下の通りです：
 
 ```move
 module collection::dynamic_fields ;
@@ -54,9 +54,9 @@ public fun add_dofchild(
 }
 ```
 
-### Accessing and Mutating a Dynamic Field
+### 動的フィールドのアクセスと変更
 
-Dynamic fields and dynamic object fields can be read or accessed as the following:
+動的フィールドと動的オブジェクトフィールドは以下のように読み取りまたはアクセスできます：
 
 ```move
 // Borrows a reference to a DOFChild
@@ -81,7 +81,7 @@ public fun borrow_dofchild_via_parent(
 }
 ```
 
-Dynamic fields and dynamic object fields can also be mutated as the following:
+動的フィールドと動的オブジェクトフィールドは以下のように変更することもできます：
 
 ```move
 // Mutate a DOFChild directly
@@ -107,11 +107,11 @@ public fun mutate_dfchild_via_parent(
 }
 ```
 
-_Quiz: Why can `mutate_dofchild` be an entry function but not `mutate_dfchild`?_
+_クイズ：なぜ `mutate_dofchild` はエントリー関数になれるのに `mutate_dfchild` はなれないのでしょうか？_
 
-### Removing a Dynamic Field
+### 動的フィールドの削除
 
-We can remove a dynamic field from its parent object as follows:
+親オブジェクトから動的フィールドを以下のように削除できます：
 
 ```move
 // Removes a DFChild given its name and parent object's mutable reference, and
@@ -150,16 +150,16 @@ public fun reclaim_dofchild(
 }
 ```
 
-Note that in the case of a dynamic object field, we can delete or transfer it after removing its attachment to another object, as a dynamic object field is a Sui object. But we cannot do the same with a dynamic field, as it does not have the `key` ability and is not a Sui object.
+動的オブジェクトフィールドの場合、別のオブジェクトへの添付を削除した後、削除または転送できることに注意してください。動的オブジェクトフィールドは Sui オブジェクトだからです。しかし、動的フィールドは `key` アビリティを持たず、Sui オブジェクトではないため、同じことはできません。
 
-## Dynamic Field vs. Dynamic Object Field
+## 動的フィールド vs. 動的オブジェクトフィールド
 
-When should you use a dynamic field versus a dynamic object field? Generally speaking, we want to use dynamic object fields when the child type in question has the `key` ability and use dynamic fields otherwise.
+動的フィールドと動的オブジェクトフィールドをいつ使用すべきでしょうか？一般的に言えば、問題の子型が `key` アビリティを持つ場合は動的オブジェクトフィールドを使用し、そうでなければ動的フィールドを使用したいと思います。
 
-For a full explanation of the underlying reason, please check [this forum post](https://forums.sui.io/t/dynamicfield-vs-dynamicobjectfield-why-do-we-have-both/2095) by @sblackshear.
+根本的な理由の詳細な説明については、@sblackshear による[このフォーラム投稿](https://forums.sui.io/t/dynamicfield-vs-dynamicobjectfield-why-do-we-have-both/2095)を確認してください。
 
-## Revisiting `Table`
+## `Table` の再検討
 
-Now we understand how dynamic fields work, we can think of the `Table` collection as a thin wrapper around dynamic field operations.
+動的フィールドがどのように動作するかを理解したので、`Table` コレクションを動的フィールド操作の薄いラッパーと考えることができます。
 
-You can look through the [source code](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/table.move) of the `Table` type in Sui as an exercise, and see how each of the previously introduced operations map to dynamic field operations and with some additional logic to keep track of the size of the `Table`.
+演習として、Sui での Table タイプの[ソースコード](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/table.move)を確認し、以前に紹介した各操作が動的フィールド操作にどのようにマップされ、`Table` のサイズを追跡するための追加ロジックがあるかを確認できます。

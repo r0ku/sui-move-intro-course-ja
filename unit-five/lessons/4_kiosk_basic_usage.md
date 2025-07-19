@@ -1,11 +1,11 @@
-# Kiosk Basic Usage
+# Kiosk の基本的な使用方法
 
-## Create Kiosk
+## Kiosk の作成
 
-Let's first deploy the example kiosk smart contract and export the package ID for later use.
+まず、サンプルキオスクスマートコントラクトをデプロイし、後で使用するためにパッケージ ID をエクスポートしましょう。
 
 ```bash
-export KIOSK_PACKAGE_ID=<Package ID of example kiosk smart contract>
+export KIOSK_PACKAGE_ID=<サンプルキオスクスマートコントラクトのパッケージID>
 ```
 
 ```move
@@ -21,26 +21,26 @@ public fun new_kiosk(ctx: &mut TxContext) {
 }
 ```
 
-There are 2 ways to create a new kiosk:
+新しいキオスクを作成する方法は 2 つあります：
 
-1. Use `kiosk::new()` to create new kiosk but we have to make the `Kiosk` shared object and transfer the `KioskOwnerCap` to the sender ourselves by using `sui::transfer`.
+1. `kiosk::new()` を使用して新しいキオスクを作成しますが、`Kiosk` を共有オブジェクトにし、`sui::transfer` を使用して `KioskOwnerCap` を送信者に転送する必要があります。
 
 ```bash
 sui client call --package $KIOSK_PACKAGE_ID --module kiosk --function new_kiosk
 ```
 
-2. Use `entry kiosk::default()` to automatically do all above steps for us.
+2. `entry kiosk::default()` を使用して、上記のすべてのステップを自動的に実行します。
 
-You can export the newly created `Kiosk` and its `KioskOwnerCap` for later use.
+後で使用するために、新しく作成された `Kiosk` とその `KioskOwnerCap` をエクスポートできます。
 
 ```bash
-export KIOSK=<Object id of newly created Kiosk>
-export KIOSK_OWNER_CAP=<Object id of newly created KioskOwnerCap>
+export KIOSK=<新しく作成されたKioskのオブジェクトID>
+export KIOSK_OWNER_CAP=<新しく作成されたKioskOwnerCapのオブジェクトID>
 ```
 
-_💡Note: Kiosk is heterogeneous collection by default so that's why it doesn't need type parameter for their items_
+_💡 注意：Kiosk はデフォルトで異質コレクション (heterogeneous collection) なので、アイテムに型パラメータが必要ありません。_
 
-## Place Item inside Kiosk
+## Kiosk へのアイテム配置
 
 ```move
 public struct TShirt has key, store {
@@ -59,9 +59,9 @@ public fun place(kiosk: &mut Kiosk, cap: &KioskOwnerCap, item: TShirt) {
 }
 ```
 
-We can use `kiosk::place()` API to place an item inside kiosk. Remember that only the Kiosk Owner can have access to this API.
+`kiosk::place()` API を使用してキオスク内にアイテムを配置できます。Kiosk Owner のみがこの API にアクセスできることを覚えておいてください。
 
-## Withdraw Item from Kiosk
+## Kiosk からのアイテム引き出し
 
 ```move
 /// Withdraw item from Kiosk
@@ -74,9 +74,9 @@ public fun withdraw(
 }
 ```
 
-We can use `kiosk::take()` API to withdraw an item from kiosk. Remember that only the Kiosk Owner can have access to this API.
+`kiosk::take()` API を使用してキオスクからアイテムを引き出すことができます。Kiosk Owner のみがこの API にアクセスできることを覚えておいてください。
 
-## List Item for Sale
+## 販売用アイテム出品
 
 ```move
 /// List item for sale
@@ -90,4 +90,4 @@ public fun list(
 }
 ```
 
-We can use `kiosk::list()` API to list an item for sale. Remember that only the Kiosk Owner can have access to this API.
+`kiosk::list()` API を使用してアイテムを販売用に出品できます。Kiosk Owner のみがこの API にアクセスできることを覚えておいてください。

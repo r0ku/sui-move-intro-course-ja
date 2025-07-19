@@ -1,10 +1,10 @@
-# The `Coin` Resource and `create_currency` Method
+# `Coin`リソースと`create_currency`メソッド
 
-Now we know how generics and witness patterns work, let's revisit the `Coin` resource and the `create_currency` method.
+ジェネリックとウィットネスパターンがどのように動作するかがわかったので、`Coin` リソースと `create_currency` メソッドを見直しましょう。
 
-## The `Coin` Resource
+## `Coin`リソース
 
-Now we understand how generics work. We can revisit the `Coin` resource from `sui::coin`. It's [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L40) as the following:
+ジェネリックがどのように動作するかを理解したので、`sui::coin` の `Coin` リソースを見直すことができます。以下のように[定義](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L40)されています：
 
 ```move
 public struct Coin<phantom T> has key, store {
@@ -13,9 +13,9 @@ public struct Coin<phantom T> has key, store {
 }
 ```
 
-The `Coin` resource type is a struct that has a generic type `T` and two fields, `id` and `balance`. `id` is of the type `sui::object::UID`, which we have already seen before.
+`Coin` リソースタイプは、ジェネリック型 `T` と 2 つのフィールド `id` と `balance` を持つ構造体です。`id` は `sui::object::UID` 型で、これは以前に見たことがあります。
 
-`balance` is of the type [`sui::balance::Balance`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/balance.md#0x2_balance_Balance), and is [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/balance.move#L31) as:
+`balance` は [`sui::balance::Balance`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/balance.md#0x2_balance_Balance) 型で、以下のように[定義](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/balance.move#L31)されています：
 
 ```move
 public struct Balance<phantom T> has store {
@@ -23,13 +23,13 @@ public struct Balance<phantom T> has store {
 }
 ```
 
-Recall our discussion on [`phantom`](./3_witness_design_pattern.md#the-phantom-keyword), The type `T` is used in `Coin` only as an argument to another phantom type for `Balance`, and in `Balance`, it's not used in any of its fields, thus `T` is a `phantom` type parameter.
+[`phantom`](./3_witness_design_pattern.md#the-phantom-keyword)に関する議論を思い出してください。型 `T` は `Coin` では `Balance` の別のファントム型への引数としてのみ使用され、`Balance` ではそのフィールドのいずれでも使用されていないため、`T` は `phantom` 型パラメータです。
 
-`Coin<T>` serves as a transferrable asset representation of a certain amount of the fungible token type `T` that can be transferred between addresses or consumed by smart contract function calls.
+`Coin<T>` は、アドレス間で転送したり、スマートコントラクト関数呼び出しで消費したりできるファンジブルトークン型 `T` の特定の量の転送可能なアセット表現として機能します。
 
-## The `create_currency` Method
+## `create_currency`メソッド
 
-Let's look at what `coin::create_currency` actually does in its [source code](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L211):
+`coin::create_currency` が実際に何を行っているかを[ソースコード](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L211)で見てみましょう：
 
 ```move
 public fun create_currency<T: drop>(
@@ -61,13 +61,13 @@ public fun create_currency<T: drop>(
 }
 ```
 
-The assert checks that the `witness` resource passed in is a One Time Witness using the [`sui::types::is_one_time_witness`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/types.move) method from the Sui Framework.
+assert は、Sui フレームワークの [`sui::types::is_one_time_witness`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/types.move) メソッドを使用して、渡された `witness` リソースがワンタイムウィットネスであることをチェックします。
 
-The method creates and returns two objects, one is the `TreasuryCap` resource and the other is a `CoinMetadata` resource.
+このメソッドは 2 つのオブジェクトを作成して返します。1 つは `TreasuryCap` リソース、もう 1 つは `CoinMetadata` リソースです。
 
 ### `TreasuryCap`
 
-The `TreasuryCap` is an asset and is guaranteed to be a singleton object by the One Time Witness pattern:
+`TreasuryCap` はアセットであり、ワンタイムウィットネスパターンによってシングルトンオブジェクトであることが保証されています：
 
 ```move
 /// Capability allowing the bearer to mint and burn
@@ -78,7 +78,7 @@ public struct TreasuryCap<phantom T> has key, store {
 }
 ```
 
-It wraps a singleton field `total_supply` of type `Balance::Supply`:
+これは `Balance::Supply` 型のシングルトンフィールド `total_supply` をラップします：
 
 ```move
 /// A Supply of T. Used for minting and burning.
@@ -88,16 +88,16 @@ public struct Supply<phantom T> has store {
 }
 ```
 
-`Supply<T>` tracks the total amount of the given custom fungible token of type `T` currently circulating. You can see why this field must be a singleton, as having multiple `Supply` instances for a single token type makes no sense.
+`Supply<T>` は、現在流通している型 `T` の指定されたカスタムファンジブルトークンの総量を追跡します。このフィールドがシングルトンでなければならない理由がわかります。単一のトークン型に対して複数の `Supply` インスタンスを持つことは意味がないからです。
 
 ### `CoinMetadata`
 
-This is a resource that stores the metadata of the fungible token that has been created. It includes the following fields:
+これは、作成されたファンジブルトークンのメタデータを格納するリソースです。以下のフィールドが含まれます：
 
-- `decimals`: the precision of this custom fungible token
-- `name`: the name of this custom fungible token
-- `symbol`: the token symbol of this custom fungible token
-- `description`: the description of this custom fungible token
-- `icon_url`: the URL to the icon file of this custom fungible token
+- `decimals`: このカスタムファンジブルトークンの精度 (precision)
+- `name`: このカスタムファンジブルトークンの名前
+- `symbol`: このカスタムファンジブルトークンのトークンシンボル
+- `description`: このカスタムファンジブルトークンの説明
+- `icon_url`: このカスタムファンジブルトークンのアイコンファイルへの URL
 
-The information contained in `CoinMetadata` can be thought of as a basic and lightweight fungible token standard of Sui, and can be used by wallets and explorers to display fungible tokens created using the `sui::coin` module.
+`CoinMetadata` に含まれる情報は、Sui の基本的で軽量なファンジブルトークン標準と考えることができ、`sui::coin` モジュールを使用して作成されたファンジブルトークンをウォレットやエクスプローラーが表示するために使用できます。

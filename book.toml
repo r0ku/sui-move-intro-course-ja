@@ -1,6 +1,6 @@
 [book]
 authors = ["uvd"]
-language = "en"
+language = "ja"
 multilingual = false
 src = "."
-title = "Sui Move Intro Course"
+title = "Sui Move 入門コース"

@@ -1,11 +1,11 @@
-# Unit Testing
+# ユニットテスト (Unit Testing)
 
-Sui supports the [Move Testing Framework](https://move-book.com/move-basics/testing). Here, we will create some unit tests for `Managed Coin` to show how to write unit tests and run them.
+Sui は[Move テストフレームワーク](https://move-book.com/move-basics/testing)をサポートしています。ここでは、ユニットテストの書き方と実行方法を示すために、`Managed Coin` のユニットテストをいくつか作成します。
 
-## Testing Environment
+## テスト環境
 
-Sui Move test code is just like any other Sui Move code, but it has special annotations and functions to distinguish it from the actual production code.
-Test functions or modules start with the `#[test]` or `#[test_only]` annotation.
+Sui Move のテストコードは他の Sui Move コードと同じですが、実際のプロダクションコードと区別するための特別なアノテーション (annotation) と関数があります。
+テスト関数またはモジュールは `#[test]` または `#[test_only]` アノテーションで始まります。
 
 ```move
 #[test_only]
@@ -16,13 +16,13 @@ fun mint_burn() {
 }
 ```
 
-We will put the unit tests for `Managed Coin` into a separate testing module called `managed_tests`.
+`Managed Coin` のユニットテストを `managed_tests` という別のテストモジュールに配置します。
 
-Each function inside this module can be seen as one unit test consisting of one or more transactions. We'll write one unit test called `mint_burn`.
+このモジュール内の各関数は、1 つまたは複数のトランザクションからなる 1 つのユニットテストと見なすことができます。`mint_burn` という 1 つのユニットテストを書きます。
 
-## Test Scenario
+## テストシナリオ (Test Scenario)
 
-Inside the testing environment, we will be mainly leveraging the [`test_scenario` package](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move) to simulate a runtime environment. The main object we need to understand and interact with here is the `Scenario` object. A `Scenario` simulates a multi-transaction sequence, and it can be initialized with the sender address as follows:
+テスト環境内では、主に[`test_scenario` パッケージ](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move)を活用してランタイム環境をシミュレートします。ここで理解し、相互作用する必要がある主要なオブジェクトは `Scenario` オブジェクトです。`Scenario` は複数トランザクションのシーケンスをシミュレートし、送信者アドレスで以下のように初期化できます：
 
 ```move
 // Initialize a mock sender address
@@ -34,11 +34,11 @@ let mut scenario = test_scenario::begin(addr1);
 scenario.end();
 ```
 
-_💡Note that the `Scenario` object is not droppable, so it must be explicitly cleaned up at the end of its scope using `test_scenario::end`._
+_💡`Scenario` オブジェクトはドロップできないため、`test_scenario::end` を使用してそのスコープの最後で明示的にクリーンアップする必要があることに注意してください。_
 
-### Initializing the Module State
+### モジュール状態の初期化
 
-To test our `Managed Coin` module, we need first to initialize the module state. Given that our module has an `init` function, we need to first create a `test_only` init function inside the `managed` module:
+`Managed Coin` モジュールをテストするには、まずモジュール状態を初期化する必要があります。モジュールに `init` 関数があるため、まず `managed` モジュール内に `test_only` init 関数を作成する必要があります：
 
 ```move
 #[test_only]
@@ -48,7 +48,7 @@ public fun test_init(ctx: &mut TxContext) {
 }
 ```
 
-This is essentially a mock `init` function that can only be used for testing. Then we can initialize the runtime state in our scenario by simply calling this function:
+これは基本的にテストでのみ使用できるモック `init` 関数です。その後、この関数を呼び出すだけで、シナリオでランタイム状態を初期化できます：
 
 ```move
 // Run the managed coin module init function
@@ -57,15 +57,15 @@ This is essentially a mock `init` function that can only be used for testing. Th
 };
 ```
 
-### Minting
+### ミント
 
-We use the [`next_tx` method](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move#L249) to advance to the next transaction in our scenario where we want to mint a `Coin<MANAGED>` object.
+[`next_tx` メソッド](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test/test_scenario.move#L249)を使用して、`Coin<MANAGED>` オブジェクトをミントしたいシナリオの次のトランザクションに進みます。
 
-To do this, we need first to extract the `TreasuryCap<MANAGED>` object. We use a special testing function called `take_from_sender` to retrieve this from our scenario. Note that we need to pass into `take_from_sender` the type parameter of the object we are trying to retrieve.
+これを行うには、まず `TreasuryCap<MANAGED>` オブジェクトを抽出する必要があります。シナリオからこれを取得するために `take_from_sender` という特別なテスト関数を使用します。取得しようとするオブジェクトの型パラメータを `take_from_sender` に渡す必要があることに注意してください。
 
-Then we simply call the `managed::mint` using all the necessary parameters.
+その後、必要なパラメータをすべて使用して `managed::mint` を呼び出すだけです。
 
-At the end of this transaction, we must return the `TreasuryCap<MANAGED>` object to the sender address using `test_scenario::return_to_address`.
+このトランザクションの最後に、`test_scenario::return_to_address` を使用して `TreasuryCap<MANAGED>` オブジェクトを送信者アドレスに返す必要があります。
 
 ```move
 scenario.next_tx(addr1);
@@ -79,20 +79,20 @@ scenario.next_tx(addr1);
 };
 ```
 
-### Burning
+### バーン
 
-To test burning a token, the procedure is very similar to testing minting. The only difference is that we must also retrieve a `Coin<MANAGED>` object from the person it was minted to.
+トークンのバーンをテストするには、手順はミントのテストと非常に似ています。唯一の違いは、ミントされた人から `Coin<MANAGED>` オブジェクトも取得する必要があることです。
 
-## Running Unit Tests
+## ユニットテストの実行
 
-The full [`managed_tests`](../example_projects/fungible_tokens/tests/managed_tests.move) module source code can be found under `example_projects/fungible_tokens/tests/` folder.
+完全な[`managed_tests`](../example_projects/fungible_tokens/tests/managed_tests.move)モジュールのソースコードは、`example_projects/fungible_tokens/tests/` フォルダの下で確認できます。
 
-To execute the unit tests, navigate to the project directory in CLI and enter the following command:
+ユニットテストを実行するには、CLI でプロジェクトディレクトリに移動し、以下のコマンドを入力してください：
 
 ```bash
 sui move test
 ```
 
-You should see console output indicating which unit tests have passed or failed.
+どのユニットテストが合格または失敗したかを示すコンソール出力が表示されるはずです。
 
 ![Unit Test](../images/unittest.png)

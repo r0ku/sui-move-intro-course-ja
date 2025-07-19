@@ -1,8 +1,8 @@
-# Capability Design Pattern
+# ケイパビリティデザインパターン (Capability Design Pattern)
 
-Now we have the basics of a transcript publishing system, we want to add some access control to our smart contract.
+これで成績証明書公開システムの基礎ができたので、スマートコントラクトにアクセス制御を追加したいと思います。
 
-Capability is a commonly used pattern in Move that allows fine-tuned access control using an object-centric model. Let's take a look at how we can define this capability object:
+ケイパビリティ (capability) は、オブジェクト中心モデルを使用してきめ細かなアクセス制御を可能にする、Move でよく使用されるパターンです。このケイパビリティオブジェクトを定義する方法を見てみましょう：
 
 ```move
 // Type that marks the capability to create, update, and delete transcripts
@@ -11,15 +11,15 @@ public struct TeacherCap has key {
 }
 ```
 
-We define a new struct `TeacherCap` that marks the capability to perform privileged actions on transcripts. If we want the capability to be non-transferrable, we simply do not add the `store` ability to the struct.
+成績証明書に対する特権アクション (privileged action) を実行するケイパビリティをマークする新しい構造体 `TeacherCap` を定義します。ケイパビリティを転送不可にしたい場合は、構造体に `store` アビリティを追加しないだけです。
 
-\*💡Note: This is also how the equivalent of soulbound tokens (SBT) can be easily implemented in Move. You simply define a struct that has the `key` ability, but not the `store` ability.
+\*💡 注意：これは、ソウルバウンドトークン (SBT: soulbound token) の同等物を Move で簡単に実装する方法でもあります。`key` アビリティを持つが `store` アビリティを持たない構造体を定義するだけです。
 
-## Passing and Consuming Capability Objects
+## ケイパビリティオブジェクトの受け渡しと消費
 
-Next, we need to modify the methods which should be callable by someone with the `TeacherCap` capability object to take in the capability as an extra parameter and consume it immediately.
+次に、`TeacherCap` ケイパビリティオブジェクトを持つ人が呼び出すべきメソッドを変更して、ケイパビリティを追加パラメータとして受け取り、すぐに消費するようにする必要があります。
 
-For example, for the `create_wrappable_transcript_object` method, we can modify it as the follows:
+例えば、`create_wrappable_transcript_object` メソッドでは、以下のように変更できます：
 
 ```move
 public fun create_wrappable_transcript_object(
@@ -39,19 +39,19 @@ public fun create_wrappable_transcript_object(
 }
 ```
 
-We pass in a reference to `TeacherCap` capability object and consume it immediately with the `_` notation for unused variables and parameters. Note that because we are only passing in a reference to the object, consuming the reference has no effect on the original object.
+`TeacherCap` ケイパビリティオブジェクトへの参照 (reference) を渡し、未使用の変数とパラメータの `_` 記法ですぐに消費します。オブジェクトへの参照のみを渡しているため、参照の消費は元のオブジェクトに影響を与えないことに注意してください。
 
-_Quiz: What happens if try to pass in `TeacherCap` by value?_
+_クイズ：`TeacherCap` を値で渡そうとするとどうなりますか？_
 
-This means only an address that has a `TeacherCap` object can call this method, effectively implementing access control on this method.
+これは、`TeacherCap` オブジェクトを持つアドレスのみがこのメソッドを呼び出すことができることを意味し、このメソッドでアクセス制御を効果的に実装しています。
 
-We make similar modifications to all other methods in the contract that perform privileged actions on transcripts.
+成績証明書に対して特権アクションを実行するコントラクトの他のすべてのメソッドにも同様の変更を行います。
 
-## Initializer Function
+## 初期化関数 (Initializer Function)
 
-A module's initializer function is called once upon publishing the module. This is useful for initializing the state of the smart contract, and is used often to send out the initial set of capability objects.
+モジュールの初期化関数 (initializer function) は、モジュールの公開時に一度だけ呼び出されます。これはスマートコントラクトの状態を初期化するのに便利で、初期のケイパビリティオブジェクトセットを送信するためによく使用されます。
 
-In our example, we can define the `init` method as the following:
+この例では、`init` メソッドを以下のように定義できます：
 
 ```move
 /// Module initializer is called only once on module publish.
@@ -62,21 +62,21 @@ fun init(ctx: &mut TxContext) {
 }
 ```
 
-This will create one copy of the `TeacherCap` object and send it to the publisher's address when the module is first published.
+これにより、`TeacherCap` オブジェクトのコピーが 1 つ作成され、モジュールが最初に公開されたときに公開者のアドレスに送信されます。
 
-We can see the publish transaction's effects on the [Sui Explorer](../../unit-one/lessons/6_hello_world.md#viewing-the-object-with-sui-explorer) as below:
+公開トランザクションの効果は、以下のように[Sui Explorer](../../unit-one/lessons/6_hello_world.md#viewing-the-object-with-sui-explorer)で確認できます：
 
 ![Publish Output](../images/publish.png)
 
-The second object created from the above transaction is an instance of the `TeacherCap` object, and sent to the publisher address:
+上記のトランザクションから作成された 2 番目のオブジェクトは `TeacherCap` オブジェクトのインスタンスで、公開者アドレスに送信されます：
 
 ![Teacher Cap](../images/teachercap.png)
 
-_Quiz: What was the first object created?_
+_クイズ：最初に作成されたオブジェクトは何でしたか？_
 
-## Add Additional Teachers or Admins
+## 追加教師または管理者の追加
 
-In order to give additional addresses admin access, we can simply define a method to create and send additional `TeacherCap` objects as the following:
+追加のアドレスに管理者アクセス権を与えるには、以下のように追加の `TeacherCap` オブジェクトを作成して送信するメソッドを定義するだけです：
 
 ```move
 public fun add_additional_teacher(
@@ -93,6 +93,6 @@ public fun add_additional_teacher(
 }
 ```
 
-This method re-uses the `TeacherCap` to control access, but if needed, you can also define a new capability struct indicating sudo access.
+このメソッドは `TeacherCap` を再利用してアクセスを制御しますが、必要に応じて、sudo アクセスを示す新しいケイパビリティ構造体を定義することもできます。
 
-**Here is the third work-in-progress version of what we have written so far: [WIP transcript.move](../example_projects/transcript/sources/transcript_3.move_wip)**
+**これまでに書いた内容の 3 番目の作業中バージョンはこちらです：[WIP transcript.move](../example_projects/transcript/sources/transcript_3.move_wip)**

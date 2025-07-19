@@ -1,8 +1,8 @@
-# Object Wrapping
+# オブジェクトラッピング (Object Wrapping)
 
-There are multiple ways of nesting an object inside of another object in Sui Move. The first way we will introduce is called object wrapping.
+Sui Move でオブジェクトを別のオブジェクト内にネストする方法は複数あります。最初に紹介する方法は、オブジェクトラッピング (object wrapping) と呼ばれます。
 
-Let's continue our transcript example. We define a new `WrappableTranscript` type, and the associated wrapper type `Folder`.
+成績証明書の例を続けましょう。新しい `WrappableTranscript` 型と、関連するラッパー型 `Folder` を定義します。
 
 ```move
 public struct WrappableTranscript has store {
@@ -17,12 +17,12 @@ public struct Folder has key {
 }
 ```
 
-In the above example, `Folder` wraps `WrappableTranscript`, and `Folder` is addressable through its id as it has the `key` ability.
+上記の例では、`Folder` が `WrappableTranscript` をラップし、`Folder` は `key` アビリティを持つため、その ID を通じてアドレス可能です。
 
-## Object Wrapping Properties
+## オブジェクトラッピングの特性
 
-For a struct type to be capable of being embedded in a Sui object struct, which will generally have the `key` ability, the embedded struct type must have the `store` ability.
+構造体タイプが一般的に `key` アビリティを持つ Sui オブジェクト構造体に埋め込まれるためには、埋め込まれる構造体タイプは `store` アビリティを持つ必要があります。
 
-When an object is wrapped, the wrapped object is no longer accessible independently via object ID. Instead it would just be parts of the wrapper object itself. More importantly, the wrapped object can no longer be passed as an argument in Move calls, and the only access point is through the wrapper object.
+オブジェクトがラップされると、ラップされたオブジェクトはオブジェクト ID を介して独立してアクセスできなくなります。代わりに、ラッパーオブジェクト自体の一部になります。さらに重要なことは、ラップされたオブジェクトはもはや Move 呼び出しで引数として渡すことができなくなり、唯一のアクセスポイントはラッパーオブジェクトを通してのみとなることです。
 
-Because of this property, object wrapping can be used as a way to make an object inaccessible outside of specific contract calls. For further info about Object wrapping, go check out [here](https://docs.sui.io/devnet/build/programming-with-objects/ch4-object-wrapping).
+この特性により、オブジェクトラッピングは、特定のコントラクト呼び出し以外ではオブジェクトをアクセス不可能にする方法として使用できます。オブジェクトラッピングの詳細については、[こちら](https://docs.sui.io/devnet/build/programming-with-objects/ch4-object-wrapping)をご確認ください。

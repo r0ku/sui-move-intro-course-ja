@@ -1,10 +1,10 @@
-# Unit One Exercises
+# Unit One 演習問題
 
-## Q1
+## 問 1
 
-We introduced [abilities](../../unit-one/lessons/3_custom_types_and_abilities.md) in this unit, which are critical to how assets are defined in Move. However, some combinations of the four abilities are illegal in Move due to how the abilities operate, which may produce unsafe or conflicting behavior if allowed.
+このユニットでは、Move でアセットを定義する際に重要な[アビリティ (abilities)](../../unit-one/lessons/3_custom_types_and_abilities.md)を紹介しました。しかし、4 つのアビリティの一部の組み合わせは、アビリティの動作により、許可された場合に安全でない、または矛盾する動作を引き起こす可能性があるため、Move では不正です。
 
-Mark the following ability combinations as either legal or illegal:
+以下のアビリティの組み合わせを合法 (legal) または不正 (illegal) としてマークしてください：
 
 1. `copy` + `drop`
 2. `copy` + `key`
@@ -18,10 +18,10 @@ Mark the following ability combinations as either legal or illegal:
 10. `drop` + `key` + `store`
 11. `copy` + `drop` + `key` + `store`
 
-For each of the illegal combinations, briefly describe the conflicting behavior that would occur if the combination was allowed.
+不正な組み合わせのそれぞれについて、その組み合わせが許可された場合に発生する矛盾する動作を簡潔に説明してください。
 
-_Hint: You can test out these combinations using the compiler._
+_ヒント：コンパイラを使用してこれらの組み合わせをテストできます。_
 
-## Q2
+## 問 2
 
-What's the difference between `sui::transfer::transfer` and `sui::transfer::public_transfer`?
+`sui::transfer::transfer` と `sui::transfer::public_transfer` の違いは何ですか？

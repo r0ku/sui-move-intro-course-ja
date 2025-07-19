@@ -1,31 +1,31 @@
-# Programmable Transaction Block (PTB)
+# プログラマブルトランザクションブロック (PTB)
 
-Before we get into **Sui Kiosk**, it's necessary to learn about Programmable Transaction Block (PTB) and how it helps us to seamlessly fulfill Kiosk usage flow
+**Sui Kiosk** に入る前に、プログラマブルトランザクションブロック (PTB: Programmable Transaction Block) とそれが Kiosk 使用フローをシームレスに実現する方法について学ぶ必要があります。
 
-## Introduction
+## イントロダクション
 
-Most of us, more or less, have run into the situation where we want to batch a number of smaller transactions in order into a larger unit and submit one single transaction execution to the blockchain. In traditional blockchain, it was not feasible, and we need workarounds to make this work, the common solutions are:
+私たちの多くは、多かれ少なかれ、多数の小さなトランザクションを順番にバッチしてより大きな単位にまとめ、ブロックチェーンに単一のトランザクション実行を送信したいという状況に遭遇したことがあります。従来のブロックチェーンでは実現可能ではなく、これを機能させるための回避策が必要でした。一般的な解決策は：
 
-- Submit the transactions subsequently one by one. This way works fine, but the performance of your dApps is demoted significantly as you need to wait for one transaction to be finalized before you can use their outputs for the next transaction in line. Moreover, the gas fee will not be a pleasant for the end-users.
-- Create a new smart contract and a wrapper function to execute other functions from the same or different smart contracts. This approach may speed up your application and consume less gas fee but in return, reduce the developer experience as every new business use case might need a new wrapper function.
+- トランザクションを順次一つずつ送信する。この方法は機能しますが、次の順番のトランザクションでその出力を使用する前に、一つのトランザクションが完了するまで待つ必要があるため、dApps のパフォーマンスが大幅に低下します。さらに、ガス料金もエンドユーザーにとって快適ではありません。
+- 新しいスマートコントラクトとラッパー関数を作成して、同じまたは異なるスマートコントラクトから他の関数を実行する。このアプローチはアプリケーションを高速化し、ガス料金を削減する可能性がありますが、代わりに、新しいビジネスユースケースごとに新しいラッパー関数が必要になる可能性があるため、開発者体験が低下します。
 
-That’s why we introduce Programmable Transaction Block (PTB).
+そのため、プログラマブルトランザクションブロック (PTB) を導入します。
 
-## Features
+## 機能
 
-PTB is a built-in feature and supported natively by Sui Network and Sui VM. On Sui, a transaction (block) by default is a Programmable Transaction Block (PTB). PTB is a powerful tool enhancing developers with scalalability and composability:
+PTB は Sui ネットワークと Sui VM によってネイティブにサポートされている組み込み機能です。Sui では、トランザクション（ブロック）はデフォルトでプログラマブルトランザクションブロック (PTB) です。PTB は開発者にスケーラビリティ (scalalability) と構成可能性 (composability) を提供する強力なツールです：
 
-- Each PTB is composed of multiple individual commands chaining together in order. One command that we will use most of the time is `MoveCall`. For other commands, please refer to the [documentation here](https://docs.sui.io/concepts/transactions/prog-txn-blocks#executing-a-transaction-command).
-- When the transaction is executed, the commands are executed in the order they are defined when building the PTB. The outputs of one transaction command can be used as inputs for any subsequent commands.
-- Sui guarantees the atomicity of a PTB by applying the effects of all commands in the transaction (block) at the end of the transaction. If one command fails, the entire block fails and effects will not take place.
-- Each PTB can hold up to 1024 unique operations. This allows cheaper gas fee and faster execution compared to executing 1024 individual transactions in other traditional blockchains.
-- If the output returned by one command is non-`drop` value. It must be consumed by subsequent commands within the same PTB. Otherwise, the transaction (block) is considered to be failed.
+- 各 PTB は、順番に連鎖する複数の個別コマンドで構成されています。最も頻繁に使用するコマンドの一つは `MoveCall` です。他のコマンドについては、[こちらのドキュメント](https://docs.sui.io/concepts/transactions/prog-txn-blocks#executing-a-transaction-command)を参照してください。
+- トランザクションが実行される際、コマンドは PTB を構築するときに定義された順序で実行されます。一つのトランザクションコマンドの出力は、後続の任意のコマンドの入力として使用できます。
+- Sui は、トランザクション（ブロック）の最後にトランザクション内のすべてのコマンドの効果を適用することで、PTB の原子性 (atomicity) を保証します。一つのコマンドが失敗すると、ブロック全体が失敗し、効果は発生しません。
+- 各 PTB は最大 1024 の一意な操作を保持できます。これにより、他の従来のブロックチェーンで 1024 の個別トランザクションを実行する場合と比較して、より安いガス料金とより高速な実行が可能になります。
+- 一つのコマンドによって返される出力が非 `drop` 値の場合、同じ PTB 内の後続のコマンドによって消費される必要があります。そうでなければ、トランザクション（ブロック）は失敗したと見なされます。
 
-_💡Note: Refer to [documentation here](https://docs.sui.io/concepts/transactions/prog-txn-blocks) for full details on PTB_
+_💡 注意：PTB の詳細については、[こちらのドキュメント](https://docs.sui.io/concepts/transactions/prog-txn-blocks)を参照してください。_
 
-## Usage
+## 使用方法
 
-There are several ways we can use to build and execute a PTB:
+PTB を構築・実行するために使用できる方法がいくつかあります：
 
-- We already learned how to use the CLI `sui client call` to execute a single smart contract function. Behind the scenes, it is implemented using PTB with single `MoveCall` command. To build a PTB with full functionality, please use the CLI `sui client ptb` and refer to its [usage here](https://docs.sui.io/references/cli/ptb).
-- Use the Sui SDK: [Sui Typescript SDK](https://sdk.mystenlabs.com/typescript), [Sui Rust SDK](https://docs.sui.io/references/rust-sdk).
+- 単一のスマートコントラクト関数を実行するための CLI `sui client call` の使用方法をすでに学びました。舞台裏では、これは単一の `MoveCall` コマンドを持つ PTB を使用して実装されています。完全な機能を持つ PTB を構築するには、CLI `sui client ptb` を使用し、[こちらの使用方法](https://docs.sui.io/references/cli/ptb)を参照してください。
+- Sui SDK を使用する：[Sui Typescript SDK](https://sdk.mystenlabs.com/typescript)、[Sui Rust SDK](https://docs.sui.io/references/rust-sdk)。

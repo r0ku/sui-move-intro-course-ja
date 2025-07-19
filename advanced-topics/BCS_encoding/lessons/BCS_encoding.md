@@ -1,16 +1,16 @@
-# BCS Encoding
+# BCS エンコーディング
 
-Binary Canonical Serialization, or BCS, is a serialization format developed in the context of the Diem blockchain and is now extensively used in most of the blockchains based on Move (Sui, Starcoin, Aptos, 0L). BCS is not only used in the Move VM, but also used in transaction and event coding, such as serializing transactions before signing, or parsing event data.
+Binary Canonical Serialization（BCS）は、Diem ブロックチェーンのコンテキストで開発されたシリアライゼーション形式で、現在 Move（Sui、Starcoin、Aptos、0L）に基づくほとんどのブロックチェーンで広く使用されています。BCS は Move VM だけでなく、署名前のトランザクションのシリアライゼーションやイベントデータの解析など、トランザクションやイベントのコーディングにも使用されます。
 
-Knowing how BCS works is crucial if you want to understand how Move works at a deeper level and become a Move expert. Let's dive in.
+BCS の動作原理を理解することは、Move をより深いレベルで理解し、Move エキスパートになりたい場合に重要です。詳しく見ていきましょう。
 
-## BCS Specification and Properties
+## BCS 仕様と特性
 
-There are some high-level properties of BCS encoding that are good to keep in mind as we go through the rest of the lesson:
+レッスンの残りを進めるにあたって、覚えておくとよい BCS エンコーディングの高レベルな特性がいくつかあります：
 
-- BCS is a data-serialization format where the resulting output bytes do not contain any type information; because of this, the side receiving the encoded bytes will need to know how to deserialize the data
-- There are no structs in BCS (since there are no types); the struct simply defines the order in which fields are serialized
-- Wrapper types are ignored, so `OuterType` and `UnnestedType` will have the same BCS representation:
+- BCS は、結果の出力バイトに型情報を含まないデータシリアライゼーション形式です。このため、エンコードされたバイトを受信する側は、データをデシリアライズする方法を知っている必要があります
+- BCS には構造体がありません（型がないため）。構造体は単にフィールドがシリアライズされる順序を定義するだけです
+- ラッパー型は無視されるため、`OuterType` と `UnnestedType` は同じ BCS 表現を持ちます：
 
   ```move
   public struct OuterType {
@@ -24,7 +24,7 @@ There are some high-level properties of BCS encoding that are good to keep in mi
   }
   ```
 
-- Types containing the generic type fields can be parsed up to the first generic type field. So it's a good practice to put the generic type field(s) last if it's a custom type that will be ser/de'd.
+- ジェネリック型フィールドを含む型は、最初のジェネリック型フィールドまで解析できます。そのため、シリアライズ/デシリアライズされるカスタム型の場合、ジェネリック型フィールドを最後に配置するのが良い習慣です。
   ```move
   public struct BCSObject<T> has drop, copy {
       id: ID,
@@ -33,25 +33,25 @@ There are some high-level properties of BCS encoding that are good to keep in mi
       generic: T
   }
   ```
-  In this example, we can deserialize everything up to the `meta` field.
-- Primitive types like unsigned ints are encoded in Little Endian format
-- Vector is serialized as a [ULEB128](https://en.wikipedia.org/wiki/LEB128) length (with max length up to `u32`) followed by the content of the vector.
+  この例では、`meta` フィールドまですべてをデシリアライズできます。
+- 符号なし整数などのプリミティブ型は、リトルエンディアン形式でエンコードされます
+- Vector は、[ULEB128](https://en.wikipedia.org/wiki/LEB128) 長さ（最大長さは `u32` まで）に続いてベクターの内容としてシリアライズされます。
 
-The full BCS specification can be found in [the BCS repository](https://github.com/zefchain/bcs).
+完全な BCS 仕様は、[BCS リポジトリ](https://github.com/zefchain/bcs)で見つけることができます。
 
-## Using the `@mysten/bcs` JavaScript Library
+## `@mysten/bcs` JavaScript ライブラリの使用
 
-### Installation
+### インストール
 
-The library you will need to install for this part is the [@mysten/bcs library](https://www.npmjs.com/package/@mysten/bcs). You can install it by typing in the root directory of a node project:
+この部分で必要になるライブラリは、[@mysten/bcs ライブラリ](https://www.npmjs.com/package/@mysten/bcs)です。node プロジェクトのルートディレクトリで以下を入力してインストールできます：
 
 ```bash
 npm i @mysten/bcs
 ```
 
-### Basic Example
+### 基本例
 
-Let's use the JavaScript library to serialize and de-serialize some simple data types first:
+まず、JavaScript ライブラリを使用して、いくつかの単純なデータ型をシリアライズおよびデシリアライズしましょう：
 
 ```javascript
 import { bcs } from "@mysten/bcs";
@@ -72,11 +72,11 @@ const de_array = bcs.vector(bcs.u8()).parse(ser_array.toBytes());
 const de_string = bcs.string().parse(ser_string.toBytes());
 ```
 
-The serializer can be imported directly from the `@mysten/bcs` library using the above syntax.
+シリアライザーは、上記の構文を使用して `@mysten/bcs` ライブラリから直接インポートできます。
 
-There are built-in methods that can be used for Sui Move types like `bcs.u16()`, `bcs.string()`, etc. For [generic types](../../../unit-three/lessons/2_intro_to_generics.md), you can use methods like `bcs.vector(bcs.u8())` for vectors.
+Sui Move 型用に `bcs.u16()`、`bcs.string()` などの組み込みメソッドが使用できます。[ジェネリック型](../../../unit-three/lessons/2_intro_to_generics.md)については、ベクター用に `bcs.vector(bcs.u8())` などのメソッドが使用できます。
 
-Let's take a close look at the serialized and deserialized fields:
+シリアライズおよびデシリアライズされたフィールドを詳しく見てみましょう：
 
 ```bash
 # ints are little-endian hexadecimals
@@ -91,9 +91,9 @@ Let's take a close look at the serialized and deserialized fields:
 test string
 ```
 
-### Type Registration
+### 型登録
 
-We can register the custom types we will be working with using the following syntax:
+以下の構文を使用して、作業する予定のカスタム型を登録できます：
 
 ```javascript
 import { bcs, fromHex, toHex } from "@mysten/bcs";
@@ -114,13 +114,13 @@ const bcsStruct = bcs.struct("BCSObject", {
 });
 ```
 
-## Using `bcs` in Sui Smart Contracts
+## Sui スマートコントラクトでの `bcs` の使用
 
-Let's continue our example from above with the structs.
+構造体を使用して、上記の例を続けましょう。
 
-### Struct Definition
+### 構造体定義
 
-We start with the corresponding struct definitions in the Sui Move contract.
+Sui Move コントラクトで対応する構造体定義から始めます。
 
 ```move
 public struct Metadata has copy, drop {
@@ -134,9 +134,9 @@ public struct BCSObject has copy, drop {
 }
 ```
 
-### Deserialization
+### デシリアライゼーション
 
-Now, let's write the function to deserialize an object in a Sui contract.
+次に、Sui コントラクトでオブジェクトをデシリアライズする関数を書きましょう。
 
 ```move
 public fun object_from_bytes(bcs_bytes: vector<u8>): BCSObject {
@@ -158,19 +158,19 @@ public fun object_from_bytes(bcs_bytes: vector<u8>): BCSObject {
 }
 ```
 
-The various `peel_*` methods in Sui Frame [`bcs` module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/bcs.md) are used to "peel" each individual field from the BCS serialized bytes. Note that the order we peel the fields must be exactly the same as the order of the fields in the struct definition.
+Sui フレームワークの [`bcs` モジュール](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/bcs.md)のさまざまな `peel_*` メソッドは、BCS シリアライズされたバイトから各個別フィールドを「剥がす (peel)」ために使用されます。フィールドを剥がす順序は、構造体定義のフィールドの順序と完全に同じでなければならないことに注意してください。
 
-_Quiz: Why are the results not the same from the first two `peel_address` calls on the same `bcs` object?_
+_クイズ：同じ `bcs` オブジェクトに対する最初の 2 つの `peel_address` 呼び出しの結果が同じでないのはなぜですか？_
 
-Also note how we convert the types from `address` to `ID` using `to_id()`, and from `vector<u8>` to `ascii::String` using `to_ascii_string()`.
+また、`to_id()` を使用して `address` から `ID` に、`to_ascii_string()` を使用して `vector<u8>` から `ascii::String` に型を変換する方法にも注意してください。
 
-_Quiz: What would happen if `BCSObject` had a `UID` type instead of an `ID` type?_
+_クイズ：`BCSObject` が `ID` 型ではなく `UID` 型を持っていた場合、何が起こるでしょうか？_
 
-## Complete Ser/De Example
+## 完全なシリアライゼーション/デシリアライゼーション例
 
-Find the full JavaScript and Sui Move sample codes in the [`example_projects`](https://github.com/sui-foundation/sui-move-intro-course/tree/main/advanced-topics/BCS_encoding/example_projects) folder.
+完全な JavaScript と Sui Move のサンプルコードは、[`example_projects`](https://github.com/sui-foundation/sui-move-intro-course/tree/main/advanced-topics/BCS_encoding/example_projects) フォルダで見つけることができます。
 
-First, we serialize a test object using the JavaScript program:
+まず、JavaScript プログラムを使用してテストオブジェクトをシリアライズします：
 
 ```javascript
 import { bcs, fromHex, toHex } from "@mysten/bcs";
@@ -201,21 +201,21 @@ const serialized = bcsStruct.serialize({
 console.log("Hex:", serialized.toHex());
 ```
 
-We can get the serialization result in hexadecimal format using the `toHex()` method.
+`toHex()` メソッドを使用して、16 進数形式でシリアライゼーション結果を取得できます。
 
-Affix the serialization result hexstring with `0x` prefix and export to an environmental variable:
+シリアライゼーション結果の 16 進文字列に `0x` プレフィックスを付けて、環境変数にエクスポートします：
 
 ```bash
 export OBJECT_HEXSTRING=0x0000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000a03616161
 ```
 
-Now we can either run the associated Move unit tests to check for correctness:
+これで、関連する Move ユニットテストを実行して正確性を確認できます：
 
 ```bash
 sui move test
 ```
 
-You should see this in the console:
+コンソールに以下が表示されるはずです：
 
 ```bash
 BUILDING bcs_move
@@ -224,12 +224,12 @@ Running the Move unit tests
 Test result: OK. Total tests: 1; passed: 1; failed: 0
 ```
 
-Or we can publish the module (and export the PACKAGE_ID) and call the `emit_object` method using the above BCS serialized hexstring:
+または、モジュールを公開し（PACKAGE_ID をエクスポート）、上記の BCS シリアライズされた 16 進文字列を使用して `emit_object` メソッドを呼び出すことができます：
 
 ```bash
 sui client call --function emit_object --module bcs_object --package $PACKAGE_ID --args $OBJECT_HEXSTRING
 ```
 
-We can then check the `Events` tab of the transaction on the Sui Explorer to see that we emitted the correctly deserialized `BCSObject`:
+その後、Sui Explorer のトランザクションの `Events` タブをチェックして、正しくデシリアライズされた `BCSObject` を発行したことを確認できます：
 
 ![Event](../images/event.png)

@@ -1,40 +1,40 @@
-# Parameter Passing and Object Deletion
+# パラメータ渡しとオブジェクト削除
 
-## Parameter Passing (by `value`, `ref` and `mut ref`)
+## パラメータ渡し（`value`、`ref`、`mut ref`による）
 
-If you are familiar with rustlang, then you are probably familiar with the Rust ownership system. One advantage of movelang compared to Solidity is that you can get a sense of what a function call might do to the asset that you used for the function interaction. Here are some examples:
+Rust 言語に精通している方は、おそらく Rust の所有権システム (ownership system) についてご存知でしょう。Solidity と比較した movelang の利点の一つは、関数の相互作用に使用するアセット (asset) に対して、関数呼び出しが何をする可能性があるかを感覚的に把握できることです。以下にいくつかの例を示します：
 
 ```move
-// You are allowed to retrieve the score but cannot modify it
+// スコアを取得することはできますが、変更はできません
 public fun view_score(transcript_object: &TranscriptObject): u8{
     transcript_object.literature
 }
 
-// You are allowed to view and edit the score but not allowed to delete it
+// スコアを表示および編集することはできますが、削除はできません
 public fun update_score(transcript_object: &mut TranscriptObject, score: u8){
     transcript_object.literature = score
 }
 
-// You are allowed to do anything with the score, including view, edit, or delete the entire transcript itself.
+// スコアに対して、表示、編集、成績証明書全体の削除を含む、あらゆる操作が可能です
 public fun delete_transcript(transcript_object: TranscriptObject){
     let TranscriptObject {id, .. } = transcript_object;
     id.delete();
 }
 ```
 
-## Object Deletion and Struct Unpacking
+## オブジェクト削除と構造体アンパック (Struct Unpacking)
 
-The `delete_transcript` method from the example above illustrates how to delete an object on Sui.
+上記の例の `delete_transcript` メソッドは、Sui でオブジェクトを削除する方法を示しています。
 
-1. In order to delete an object, you must first unpack the object and retrieve its object ID. Unpacking can only be done inside the module that defines the object due to Move's privileged struct operation rules:
+1. オブジェクトを削除するには、まずオブジェクトをアンパック (unpack) してそのオブジェクト ID を取得する必要があります。アンパックは、Move の特権構造体操作ルール (privileged struct operation rule) により、オブジェクトを定義するモジュール内でのみ実行できます：
 
-- Struct types can only be created ("packed"), destroyed ("unpacked") inside the module that defines the struct
-- The fields of a struct are only accessible inside the module that defines the struct
+- 構造体タイプは、構造体を定義するモジュール内でのみ作成（「パック」）、破棄（「アンパック」）できます
+- 構造体のフィールドは、構造体を定義するモジュール内でのみアクセス可能です
 
-Following these rules, if you want to modify your struct outside its defining module, you will need to provide public methods for these operations.
+これらのルールに従って、定義モジュールの外で構造体を変更したい場合は、これらの操作のためのパブリックメソッド (public method) を提供する必要があります。
 
-2. After unpacking the struct and retrieving its ID, the object can be deleted by simply calling the `id.delete()` framework method on its object ID.
+2. 構造体をアンパックして ID を取得した後、オブジェクト ID で `id.delete()` フレームワークメソッドを呼び出すだけでオブジェクトを削除できます。
 
-\_💡Note: the `..` (dot dot) in the above method denotes that we're ignoring the remaining fields in the struct unpacking. This allows us to extract only the fields we need while ignoring the rest.\_
+_💡 注意：上記のメソッドの `..`（ドットドット）は、構造体アンパックで残りのフィールドを無視することを示しています。これにより、必要なフィールドのみを抽出し、残りを無視できます。_
 
-**Here is the work-in-progress version of what we have written so far: [WIP transcript.move](../example_projects/transcript/sources/transcript__1.move_wip)**
+**これまでに書いた内容の作業中バージョンはこちらです：[WIP transcript.move](../example_projects/transcript/sources/transcript__1.move_wip)**

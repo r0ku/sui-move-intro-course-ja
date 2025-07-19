@@ -1,65 +1,65 @@
-# Managed Coin Example
+# 管理型コインの例
 
-Now we have peeked under the hood of the `sui::coin` module, we can look at a simple but complete example of creating a type of custom fungible token where there is a trusted manager that has the capability to mint and burn, similar to many ERC-20 implementations.
+`sui::coin` モジュールの仕組みを詳しく見たので、多くの ERC-20 実装と同様に、ミント (mint) とバーン (burn) の機能を持つ信頼できる管理者がいるカスタムファンジブルトークンタイプを作成するシンプルで完全な例を見ることができます。
 
-## Smart Contract
+## スマートコントラクト
 
-You can find the complete [Managed Coin example contract](../example_projects/fungible_tokens/sources/managed.move) under the example project folder.
+完全な[管理型コインサンプルコントラクト](../example_projects/fungible_tokens/sources/managed.move)は、サンプルプロジェクトフォルダの下で確認できます。
 
-Given what we have covered so far, this contract should be fairly easy to understand. It follows the [One Time Witness](./3_witness_design_pattern.md#one-time-witness) pattern exactly, where the `witness` resource is named `MANAGED`, and automatically created by the module `init` function.
+これまでに説明した内容を考えると、このコントラクトは理解しやすいはずです。これは[ワンタイムウィットネス](./3_witness_design_pattern.md#one-time-witness)パターンに正確に従っており、`witness` リソースは `MANAGED` という名前で、モジュールの `init` 関数によって自動的に作成されます。
 
-The `init` function then calls `coin::create_currency` to get the `TreasuryCap` and `CoinMetadata` resources. The parameters passed into this function are the fields of the `CoinMetadata` object, so include the token name, symbol, icon URL, etc.
+`init` 関数は `coin::create_currency` を呼び出して `TreasuryCap` と `CoinMetadata` リソースを取得します。この関数に渡されるパラメータは `CoinMetadata` オブジェクトのフィールドなので、トークン名、シンボル、アイコン URL などが含まれます。
 
-The `CoinMetadata` is immediately frozen after creation via the `transfer::freeze_object` method, so that it becomes a [shared immutable object](../../unit-two/lessons/2_ownership.md#shared-immutable-objects) that can be read by any address.
+`CoinMetadata` は作成後すぐに `transfer::freeze_object` メソッドを介して凍結され、任意のアドレスが読み取ることができる[共有不変オブジェクト](../../unit-two/lessons/2_ownership.md#shared-immutable-objects)になります。
 
-The `TreasuryCap` [Capability](../../unit-two/lessons/6_capability_design_pattern.md) object is used as a way to control access to the `mint` and `burn` methods that create or destroy `Coin<MANAGED>` objects respectively.
+`TreasuryCap` [ケイパビリティ](../../unit-two/lessons/6_capability_design_pattern.md)オブジェクトは、それぞれ `Coin<MANAGED>` オブジェクトを作成または破棄する `mint` および `burn` メソッドへのアクセスを制御する方法として使用されます。
 
-## Publishing and CLI Testing
+## 公開と CLI テスト
 
-### Publish the Module
+### モジュールの公開
 
-Under the [fungible_tokens](../example_projects/fungible_tokens/) project folder, run:
+[fungible_tokens](../example_projects/fungible_tokens/)プロジェクトフォルダの下で、以下を実行してください：
 
 ```bash
 sui client publish
 ```
 
-You should see console output similar to:
+以下のようなコンソール出力が表示されるはずです：
 
 ![Publish Output](../images/publish.png)
 
-The two immutable objects created are respectively the package itself and the `CoinMetadata` object of `Managed Coin`. And the owned object passed to the transaction sender is the `TreasuryCap` object of `Managed Coin`.
+作成された 2 つの不変オブジェクトは、それぞれパッケージ自体と `Managed Coin` の `CoinMetadata` オブジェクトです。そして、トランザクション送信者に渡される所有オブジェクトは `Managed Coin` の `TreasuryCap` オブジェクトです。
 
 ![Treasury Object](../images/treasury.png)
 
-Export the object IDs of the package object and the `TreasuryCap` object to environmental variables:
+パッケージオブジェクトと `TreasuryCap` オブジェクトのオブジェクト ID を環境変数にエクスポートしてください：
 
 ```bash
-export PACKAGE_ID=<package object ID from previous output>
-export TREASURYCAP_ID=<treasury cap object ID from previous output>
+export PACKAGE_ID=<前の出力からのパッケージオブジェクトID>
+export TREASURYCAP_ID=<前の出力からのtreasury capオブジェクトID>
 ```
 
-### Minting Tokens
+### トークンのミント
 
-To mint some `MNG` tokens, we can use the following CLI command:
+いくつかの `MNG` トークンをミントするには、以下の CLI コマンドを使用できます：
 
 ```bash
-sui client call --function mint --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID <amount to mint> <recipient address>
+sui client call --function mint --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID <ミントする量> <受信者アドレス>
 ```
 
 ![Minting](../images/minting.png)
 
-Export the object ID of the newly minted `COIN<MANAGED>` object to a bash variable:
+新しくミントされた `COIN<MANAGED>` オブジェクトのオブジェクト ID を bash 変数にエクスポートしてください：
 
 ```bash
-export COIN_ID=<coin object ID from previous output>
+export COIN_ID=<前の出力からのコインオブジェクトID>
 ```
 
-Verify that the `Supply` field under the `TreasuryCap<MANAGED>` object should be increased by the amount minted.
+`TreasuryCap<MANAGED>` オブジェクトの下の `Supply` フィールドが、ミントされた量だけ増加しているかを確認してください。
 
-### Burning Tokens
+### トークンのバーン
 
-To burn an existing `COIN<MANAGED>` object, we use the following CLI command:
+既存の `COIN<MANAGED>` オブジェクトをバーンするには、以下の CLI コマンドを使用します：
 
 ```bash
 sui client call --function burn --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID $COIN_ID
@@ -67,6 +67,6 @@ sui client call --function burn --module managed --package $PACKAGE_ID --args $T
 
 ![Burning](../images/burning.png)
 
-Verify that the `Supply` field under the `TreasuryCap<MANAGED>` object should be back to `0`.
+`TreasuryCap<MANAGED>` オブジェクトの下の `Supply` フィールドが `0` に戻っているかを確認してください。
 
-_Exercise: What other commonly used functions do fungible tokens need? You should know enough about programming in Move now to try to implement some of these functions._
+_演習：ファンジブルトークンには他にどのような一般的に使用される関数が必要ですか？Move でのプログラミングについて十分に知識があるので、これらの関数のいくつかを実装してみてください。_

@@ -1,10 +1,10 @@
-# Working with Sui Objects
+# Sui オブジェクトの操作
 
-## Introduction
+## イントロダクション
 
-Sui Move is a fully object-centric language. Transactions on Sui are expressed as operations where the inputs and outputs are both objects. As we briefly touched on this concept in [Unit One, Lesson 4](../../unit-one/lessons/4_custom_types_and_abilities.md#custome-types-and-abilities), Sui objects are the basic unit of storage in Sui. It all starts from the `struct` keyword.
+Sui Move は完全にオブジェクト中心の言語です。Sui 上のトランザクション (transaction) は、入力と出力の両方がオブジェクトである操作として表現されます。[ユニット 1、レッスン 4](../../unit-one/lessons/4_custom_types_and_abilities.md#custome-types-and-abilities)でこの概念に簡単に触れたように、Sui オブジェクト (Sui object) は Sui におけるストレージの基本単位です。すべては `struct` キーワードから始まります。
 
-Let's first start with an example that represents a transcript recording a student's grades:
+まず、学生の成績を記録する成績証明書を表す例から始めましょう：
 
 ```move
 public struct Transcript {
@@ -14,7 +14,7 @@ public struct Transcript {
 }
 ```
 
-The above definition is a regular Move struct, but it is not a Sui object. In order to make a custom Move type instantiate a Sui object in global storage, we need to add the `key` ability, and a globally unique `id: UID` field inside the struct definition.
+上記の定義は通常の Move 構造体 (struct) ですが、Sui オブジェクトではありません。カスタム Move 型をグローバルストレージ (global storage) の Sui オブジェクトとしてインスタンス化するには、`key` アビリティと、構造体定義内にグローバルに一意な `id: UID` フィールドを追加する必要があります。
 
 ```move
 public struct TranscriptObject has key {
@@ -25,13 +25,13 @@ public struct TranscriptObject has key {
 }
 ```
 
-## Create a Sui Object
+## Sui オブジェクトの作成
 
-Creating a Sui object requires a unique ID. We use the `sui::object::new` function to create a new ID passing in the current `TxContext`.
+Sui オブジェクトの作成には一意な ID が必要です。現在の `TxContext` を渡して `sui::object::new` 関数を使用して新しい ID を作成します。
 
-In Sui, every object must have an owner, which can be either an address, another object, or "shared". In our examples, we decided to make our new `transcriptObject` owned by the transaction sender. It is done using the `transfer` function of the Sui framework and using `ctx.sender()` function to get the current entry call's sender's address.
+Sui では、すべてのオブジェクトは所有者 (owner) を持つ必要があり、それはアドレス、別のオブジェクト、または「共有 (shared)」のいずれかです。この例では、新しい `transcriptObject` をトランザクション送信者が所有するように決定しました。これは、Sui フレームワークの `transfer` 関数を使用し、`ctx.sender()` 関数を使用して現在のエントリー呼び出しの送信者のアドレスを取得することで実行されます。
 
-We will discuss object ownership more in-depth in the next section.
+オブジェクトの所有権 (ownership) については、次のセクションでより詳しく説明します。
 
 ```move
 public fun create_transcript_object(history: u8, math: u8, literature: u8, ctx: &mut TxContext) {
@@ -45,6 +45,6 @@ public fun create_transcript_object(history: u8, math: u8, literature: u8, ctx: 
 }
 ```
 
-_💡Note: the provided sample code generates a warning message: warning[Lint W01001]: non-composable transfer to sender. For further details, refer to the article ["Sui Linters and Warnings Update Increases Coder Velocity"](https://blog.sui.io/linter-compile-warnings-update/)_
+_💡 注意：提供されたサンプルコードは警告メッセージを生成します：warning[Lint W01001]: non-composable transfer to sender。詳細については、記事["Sui Linters and Warnings Update Increases Coder Velocity"](https://blog.sui.io/linter-compile-warnings-update/)を参照してください。_
 
-_💡Note: Move supports field punning, which allows us to skip the field values if the field name happens to be the same as the name of the value variable it is bound to._
+_💡 注意：Move はフィールドパニング (field punning) をサポートしており、フィールド名がバインドされた値変数の名前と同じ場合に、フィールド値をスキップできます。_

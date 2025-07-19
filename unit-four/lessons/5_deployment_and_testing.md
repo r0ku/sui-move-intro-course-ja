@@ -1,8 +1,8 @@
-# Deployment and Testing
+# デプロイメントとテスト
 
-Next we can deploy and test our marketplace contract through the SUI CLI.
+次に、SUI CLI を通じてマーケットプレイスコントラクトをデプロイ・テストできます。
 
-We create a simple `marketplace::widget` module so we can mint some items for us to list to help with testing.
+テストを支援するために出品するアイテムをミントできるように、シンプルな `marketplace::widget` モジュールを作成します。
 
 ```move
 module marketplace::widget;
@@ -20,96 +20,96 @@ public fun mint(ctx: &mut TxContext) {
 }
 ```
 
-This is basically the Hello World project from Unit One, but made even simpler.
+これは基本的にユニット 1 の Hello World プロジェクトですが、さらにシンプルになっています。
 
-## Deployment
+## デプロイメント
 
-Publish the package using:
+以下を使用してパッケージを公開してください：
 
 ```bash
 sui client publish
 ```
 
-You should see both `marketplace` and `widget` modules published on the explorer:
+エクスプローラーで `marketplace` と `widget` の両方のモジュールが公開されているのを確認できるはずです：
 
 ![Publish](../images/publish.png)
 
-Export the package object ID into an environmental variable:
+パッケージオブジェクト ID を環境変数にエクスポートしてください：
 
 ```bash
-export PACKAGE_ID=<package object ID from previous output>
+export PACKAGE_ID=<前の出力からのパッケージオブジェクトID>
 ```
 
-## Initialize the Marketplace
+## マーケットプレイスの初期化
 
-Next, we need to initialize the marketplace contract by calling the `create` entry function. We want to pass it a type argument to specify which type of fungible token this marketplace will accept. It's easiest to just use the `Sui` native token here. We can use the following CLI command:
+次に、`create` エントリー関数を呼び出してマーケットプレイスコントラクトを初期化する必要があります。このマーケットプレイスが受け入れるファンジブルトークンのタイプを指定するために型引数を渡したいと思います。ここでは `Sui` ネイティブトークンを使用するのが最も簡単です。以下の CLI コマンドを使用できます：
 
 ```bash
 sui client call --function create --module marketplace --package $PACKAGE_ID --type-args 0x2::sui::SUI
 ```
 
-Note the syntax for passing in the type argument for `SUI` token.
+`SUI` トークンの型引数を渡すための構文に注意してください。
 
-Export the `Marketplace` shared object's ID into an environmental variable:
+`Marketplace` 共有オブジェクトの ID を環境変数にエクスポートしてください：
 
 ```bash
-export MARKET_ID=<marketplace shared object ID from previous output>
+export MARKET_ID=<前の出力からのマーケットプレイス共有オブジェクトID>
 ```
 
-## Listing
+## 出品
 
-First, we mint a `widget` item to be listed:
+まず、出品する `widget` アイテムをミントします：
 
 ```bash
 sui client call --function mint --module widget --package $PACKAGE_ID
 ```
 
-Save the object item of the minted `widget` to an environmental variable:
+ミントされた `widget` のオブジェクトアイテムを環境変数に保存してください：
 
 ```bash
-export ITEM_ID=<object ID of the widget item from console>
+export ITEM_ID=<コンソールからのウィジェットアイテムのオブジェクトID>
 ```
 
-Then we list this item to our marketplace:
+その後、このアイテムをマーケットプレイスに出品します：
 
 ```bash
 sui client call --function list --module marketplace --package $PACKAGE_ID --args $MARKET_ID $ITEM_ID 1 --type-args $PACKAGE_ID::widget::Widget 0x2::sui::SUI
 ```
 
-We need to submit two type arguments here, first is the type of the item to be listed and second is the fungible coin type for the payment. The above example uses a listing price of `1`.
+ここでは 2 つの型引数を送信する必要があります。最初は出品されるアイテムのタイプで、2 番目は支払いのファンジブルコインタイプです。上記の例では出品価格 `1` を使用しています。
 
-After submitting this transaction, you can check the newly created listing on the [Sui explorer](https://suiexplorer.com/):
+このトランザクションを送信した後、[Sui explorer](https://suiexplorer.com/)で新しく作成されたリスティングを確認できます：
 
 ![Listing](../images/listing.png)
 
-## Purchase
+## 購入
 
-Split out a `SUI` coin object of amount `1` to use as the payment object. You can use the `sui client gas` CLI command to see a list of available `SUI` coins under your account and pick one to be split.
-
-```bash
-sui client split-coin --coin-id <object ID of the coin to be split> --amounts 1
-```
-
-Export the object ID of the newly split `SUI` coin with balance `1`:
+支払いオブジェクトとして使用するために、金額 `1` の `SUI` コインオブジェクトを分割します。`sui client gas` CLI コマンドを使用して、アカウント下で利用可能な `SUI` コインのリストを確認し、分割するものを選択できます。
 
 ```bash
-export PAYMENT_ID=<object ID of the split 1 balance SUI coin>
+sui client split-coin --coin-id <分割するコインのオブジェクトID> --amounts 1
 ```
 
-Now, let's buy back the item that we just listed:
+残高 `1` で新しく分割された `SUI` コインのオブジェクト ID をエクスポートしてください：
+
+```bash
+export PAYMENT_ID=<分割された残高1のSUIコインのオブジェクトID>
+```
+
+今度は、出品したばかりのアイテムを買い戻しましょう：
 
 ```bash
 sui client call --function buy_and_take --module marketplace --package $PACKAGE_ID --args $MARKET_ID $ITEM_ID $PAYMENT_ID --type-args $PACKAGE_ID::widget::Widget 0x2::sui::SUI
 ```
 
-You should see a long list of transaction effects in the console after submitting this transaction. We can verify that the `widget` is owned by our address, and the `payments` `Table` now has an entry with the key of our address and should be of size `1`.
+このトランザクションを送信した後、コンソールでトランザクション効果の長いリストが表示されるはずです。`widget` が私たちのアドレスによって所有されており、`payments` `Table` に私たちのアドレスをキーとするエントリがあり、サイズが `1` であることを確認できます。
 
-### Take Profits
+### 利益の取得
 
-Finally, we can claim our earnings by calling the `take_profits_and_keep` method:
+最後に、`take_profits_and_keep` メソッドを呼び出して収益を請求できます：
 
 ```bash
 sui client call --function take_profits_and_keep --module marketplace --package $PACKAGE_ID --args $MARKET_ID --type-args 0x2::sui::SUI
 ```
 
-This will reap the balance from the `payments` `Table` object and return its size to `0`. Verify this on the explorer.
+これにより `payments` `Table` オブジェクトから残高が取得され、そのサイズが `0` に戻ります。エクスプローラーでこれを確認してください。

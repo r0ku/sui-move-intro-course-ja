@@ -1,12 +1,12 @@
-# Homogeneous Collections
+# 同質コレクション (Homogeneous Collections)
 
-Before we delve into the main topic of building a marketplace on Sui, let's learn about collections in Move first.
+Sui 上でマーケットプレイスを構築するという主要トピックに入る前に、まず Move でのコレクション (collection) について学びましょう。
 
-## vectors
+## vector（ベクター）
 
-`Vector` in Move is similar to those in other languages such as C++. It's a way to dynamically allocate memory at runtime and manage a group of a single type, which can be a specific type or a [generic type](../../unit-three/lessons/2_intro_to_generics.md).
+Move の `Vector` は、C++などの他の言語のものと同様です。実行時に動的にメモリを割り当て、特定の型や[ジェネリック型](../../unit-three/lessons/2_intro_to_generics.md)である単一の型のグループを管理する方法です。
 
-See the included example code for defining a `vector` and its basic operations.
+`vector` の定義とその基本操作については、含まれているサンプルコードを参照してください。
 
 ```move
 module collection::vector;
@@ -47,19 +47,19 @@ public fun size<T>(vec: &mut GenericVector<T>): u64 {
 }
 ```
 
-It's important to note that while a vector defined with a generic type can accept objects of _an arbitrary type_, all objects in the collection still must be _the same type_, that is, the collection is _homogeneous_.
+ジェネリック型で定義されたベクターは*任意の型*のオブジェクトを受け入れることができますが、コレクション内のすべてのオブジェクトは依然として*同じ型*でなければならず、つまりコレクションは*同質 (homogeneous)* であることが重要です。
 
 ## Table
 
-A `Table` is a map-like collection that dynamically stores key-value pairs. But unlike a traditional map collection, its keys and values are not stored within the `Table` value, but instead are stored using Sui's object system. The `Table` struct acts only as a handle into the object system to retrieve those keys and values.
+`Table` はキーと値のペアを動的に格納するマップのようなコレクションです。しかし、従来のマップコレクションとは異なり、そのキーと値は `Table` 値の中に格納されるのではなく、代わりに Sui のオブジェクトシステムを使用して格納されます。`Table` 構造体は、それらのキーと値を取得するためのオブジェクトシステムへのハンドルとしてのみ機能します。
 
-The `key` type of a `Table` must have the ability constraint of `copy + drop + store`, and the `value` type must have the ability constraint of `store`.
+`Table` の `key` 型は `copy + drop + store` のアビリティ制約を持つ必要があり、`value` 型は `store` のアビリティ制約を持つ必要があります。
 
-`Table` is also a type of _homogeneous_ collection where the key and value fields can be specified or generic types, but all values and all keys in a `Table` collection must be of the _same_ type.
+`Table` も*同質*コレクションの一種で、キーと値のフィールドは指定された型またはジェネリック型にできますが、`Table` コレクション内のすべての値とすべてのキーは*同じ*型でなければなりません。
 
-_Quiz: Would two table objects containing the exact same key-value pairs be equal to each other when checked with the `===` operator? Try it out._
+_クイズ：まったく同じキーと値のペアを含む 2 つのテーブルオブジェクトは、`===` 演算子でチェックした場合、互いに等しいでしょうか？試してみてください。_
 
-See the below example for working with `Table` collections:
+`Table` コレクションの操作については、以下の例を参照してください：
 
 ```move
 module collection::table;

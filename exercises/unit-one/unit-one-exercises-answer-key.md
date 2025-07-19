@@ -1,21 +1,21 @@
-# Unit One Exercises Answer Key
+# Unit One 演習問題解答キー
 
-## Q1
+## 問 1
 
-1. `copy` + `drop`: legal
-2. `copy` + `key`: illegal, `copy` contradicts `key`
-3. `copy` + `store`: legal
-4. `drop` + `key`: illegal, `drop` contradicts `key`
-5. `drop` + `store`: legal
-6. `store` + `key`: legal
-7. `copy` + `drop` + `store`: legal
-8. `copy` + `drop` + `key`: illegal, `drop` contradicts `key`
-9. `copy` + `key` + `store`: illegal, `copy` contradicts `key`
-10. `drop` + `key` + `store`: illegal, `drop` contradicts `key`
-11. `copy` + `drop` + `key` + `store`: illegal, `drop` contradicts `key`
+1. `copy` + `drop`：合法
+2. `copy` + `key`：不正、`copy` が `key` と矛盾
+3. `copy` + `store`：合法
+4. `drop` + `key`：不正、`drop` が `key` と矛盾
+5. `drop` + `store`：合法
+6. `store` + `key`：合法
+7. `copy` + `drop` + `store`：合法
+8. `copy` + `drop` + `key`：不正、`drop` が `key` と矛盾
+9. `copy` + `key` + `store`：不正、`copy` が `key` と矛盾
+10. `drop` + `key` + `store`：不正、`drop` が `key` と矛盾
+11. `copy` + `drop` + `key` + `store`：不正、`drop` が `key` と矛盾
 
-## Q2
+## 問 2
 
-`transfer` require the object to have `key`, and the object must be defined in the same module where `transfer` is invoked.
+`transfer` はオブジェクトが `key` を持つことを要求し、`transfer` が呼び出されるモジュールと同じモジュールでオブジェクトが定義されている必要があります。
 
-`public_transfer` requires the object to be transferred to have both the `key` and the `store` abilities, but it can be invoked outside of the module where the object is defined.
+`public_transfer` は転送されるオブジェクトが `key` と `store` の両方のアビリティを持つことを要求しますが、オブジェクトが定義されているモジュールの外部からでも呼び出すことができます。

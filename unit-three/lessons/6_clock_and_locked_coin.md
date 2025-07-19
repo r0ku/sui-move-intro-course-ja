@@ -1,28 +1,28 @@
-# Clock and Locked Coin Example
+# Clock とロック済みコインの例
 
-In the second fungible token example, we will introduce how to obtain time on-chain in Sui, and how to utilize that to implement a vesting mechanism for a coin.
+2 番目のファンジブルトークンの例では、Sui でオンチェーン時刻を取得する方法と、それを利用してコインのベスティング機能 (vesting mechanism) を実装する方法を紹介します。
 
 ## Clock
 
-Sui Framework has a native [clock module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md) that makes timestamps available in Move smart contracts.
+Sui フレームワークには、Move スマートコントラクトでタイムスタンプを利用可能にするネイティブ[clock モジュール](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md)があります。
 
-The main method that you will need to access is the following:
+アクセスする必要がある主要なメソッドは以下の通りです：
 
 ```
 public fun timestamp_ms(clock: &clock::Clock): u64
 ```
 
-the [`timestamp_ms`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md#function-timestamp_ms) function returns the current system timestamp, as a running total of milliseconds since an arbitrary point in the past.
+[`timestamp_ms`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md#function-timestamp_ms) 関数は、過去の任意の時点からの実行中のミリ秒の合計として、現在のシステムタイムスタンプを返します。
 
-The [`clock`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md#sui_clock_Clock) object has a special reserved identifier, `0x6`, that needs to be passed into function calls using it as one of the inputs.
+[`clock`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/clock.md#sui_clock_Clock) オブジェクトには特別な予約済み識別子 `0x6` があり、それを入力の 1 つとして使用する関数呼び出しに渡す必要があります。
 
-## Locked Coin
+## ロック済みコイン (Locked Coin)
 
-Now that we know how to access time on-chain through `clock`, implementing a vesting fungible token is relatively straight forward.
+`clock` を通じてオンチェーン時刻にアクセスする方法がわかったので、ベスティングファンジブルトークンの実装は比較的簡単です。
 
-### `Locker` Custom Type
+### `Locker` カスタムタイプ
 
-`locked_coin` builds on top of the `managed_coin` implementation with the addition of one more custom type, `Locker`:
+`locked_coin` は `managed_coin` 実装の上に構築され、追加で 1 つのカスタムタイプ `Locker` があります：
 
 ```move
 /// Transferrable object for storing the vesting coins
@@ -36,15 +36,15 @@ public struct Locker has key, store {
 }
 ```
 
-Locker is a transferrable [asset](https://github.com/sui-foundation/sui-move-intro-course/blob/main/unit-one/lessons/3_custom_types_and_abilities.md#assets) that encodes the information related to the vesting schedule and vesting status of tokens issued.
+Locker は、発行されたトークンのベスティングスケジュール (vesting schedule) とベスティング状況に関する情報をエンコードする転送可能な[アセット](https://github.com/sui-foundation/sui-move-intro-course/blob/main/unit-one/lessons/3_custom_types_and_abilities.md#assets)です。
 
-`start_date` and `final_date` are timestamps obtained from `clock`, marking the start and end of the vesting term.
+`start_date` と `final_date` は `clock` から取得されるタイムスタンプで、ベスティング期間の開始と終了をマークします。
 
-`original_balance` is the initial balance issued into a `Locker`, `balance` is the current and remaining balance taking account any vested portion that's already withdrawn.
+`original_balance` は `Locker` に発行された初期残高、`balance` は既に引き出されたベスティング済み部分を考慮した現在の残り残高です。
 
-### Minting
+### ミント
 
-In the `locked_mint` method, we create and transfer a `Locker` with the specified amount of tokens and vesting scheduled encoded:
+`locked_mint` メソッドでは、指定された量のトークンとエンコードされたベスティングスケジュールを持つ `Locker` を作成して転送します：
 
 ```move
 /// Mints and transfers a locker object with the input amount of coins and
@@ -74,11 +74,11 @@ public fun locked_mint(
 }
 ```
 
-Note how `clock` is used here to get the current timestamp.
+ここで `clock` がどのように現在のタイムスタンプを取得するために使用されているかに注目してください。
 
-### Withdrawing
+### 引き出し (Withdrawing)
 
-The `withdraw_vested` method contains the majority of the logic to compute the vested amounts:
+`withdraw_vested` メソッドには、ベスティング済み量を計算するロジックの大部分が含まれています：
 
 ```move
 /// Withdraw the available vested amount assuming linear vesting
@@ -103,8 +103,8 @@ public fun withdraw_vested(
 }
 ```
 
-This example assumes a simple linear vesting schedule, but can be modified to accommodate a wide range of vesting logic and schedule.
+この例ではシンプルな線形ベスティングスケジュールを想定していますが、幅広いベスティングロジックとスケジュールに対応するように変更できます。
 
-### Full Contract
+### 完全なコントラクト
 
-You can find the full smart contract for our implementation of a [`locked_coin`](../example_projects/locked_coin/sources/locked_coin.move) under the [example_projects/locked_coin](../example_projects/locked_coin/) folder.
+[`locked_coin`](../example_projects/locked_coin/sources/locked_coin.move) の実装の完全なスマートコントラクトは、[example_projects/locked_coin](../example_projects/locked_coin/) フォルダの下で確認できます。

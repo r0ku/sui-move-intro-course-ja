@@ -1,0 +1,58 @@
+---
+globs: "*.md"
+---
+
+# Documentation and Course Content Standards
+
+## Japanese Educational Content
+
+This course is designed for Japanese learners, so:
+
+- Primary language should be Japanese for lesson content
+- Technical terms should include both English and Japanese explanations
+- Code comments can be in English (standard practice)
+- Use clear, progressive explanations building from simple to complex
+
+## Lesson Structure
+
+### Unit Lessons (`unit-*/lessons/*.md`)
+
+- Start with learning objectives
+- Include practical code examples
+- Provide step-by-step instructions
+- End with key takeaways or summary
+
+### Exercise Files (`exercises/*/`)
+
+- Clear problem statements
+- Provide starting code or templates when helpful
+- Include expected outcomes
+- Answer keys should have detailed explanations
+
+## Content Organization
+
+- Use consistent heading hierarchy (H1 for main topics, H2 for sections)
+- Include code blocks with proper syntax highlighting using `move` language tag
+- Link to relevant example projects using relative paths
+- Include visual aids in the [images](mdc:unit-*/images/) directories when helpful
+
+## Cross-References
+
+- Link between related lessons and concepts
+- Reference example projects: `[project_name](../example_projects/project_name/)`
+- Connect theoretical content to practical implementations
+
+## Code Examples in Documentation
+
+```move
+// Use proper Move syntax highlighting
+public entry fun example_function(ctx: &mut TxContext) {
+    // Include clear comments
+}
+```
+
+## Visual Learning
+
+- Include screenshots for UI interactions
+- Use diagrams for complex concepts
+- Reference images with descriptive alt text

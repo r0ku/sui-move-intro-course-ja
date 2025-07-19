@@ -1,0 +1,51 @@
+---
+alwaysApply: true
+---
+
+# Sui Move Intro Course Project Structure
+
+This is a Japanese translation of the official Sui Move intro course from [sui-foundation/sui-move-intro-course](https://github.com/sui-foundation/sui-move-intro-course). It's organized as a progressive educational resource for Japanese learners to understand Sui Move development with hands-on examples.
+
+## Course Organization
+
+### Core Units
+
+- **unit-one/**: Environment setup, project structure, basic types and functions
+  - [hello_world](mdc:unit-one/example_projects/hello_world/) - Basic Move contract example
+- **unit-two/**: Sui objects, ownership, capabilities, and events
+  - [transcript](mdc:unit-two/example_projects/transcript/) - Object management examples
+- **unit-three/**: Sui framework, generics, witnesses, tokens, and testing
+  - [fungible_tokens](mdc:unit-three/example_projects/fungible_tokens/) - Token implementation
+  - [locked_coin](mdc:unit-three/example_projects/locked_coin/) - Time-locked assets
+  - [witness](mdc:unit-three/example_projects/witness/) - Witness pattern examples
+- **unit-four/**: Collections, dynamic fields, marketplace contracts
+  - [collections](mdc:unit-four/example_projects/collections/) - Data structures
+  - [marketplace](mdc:unit-four/example_projects/marketplace/) - Trading platform
+- **unit-five/**: Advanced patterns, PTBs, hot potato, kiosk system
+  - [flashloan](mdc:unit-five/example_projects/flashloan/) - DeFi patterns
+  - [kiosk](mdc:unit-five/example_projects/kiosk/) - NFT marketplace system
+
+### Advanced Topics
+
+- **advanced-topics/**: Specialized concepts like BCS encoding
+
+### Learning Resources
+
+- **exercises/**: Practice problems with answer keys
+- **lessons/**: Detailed explanations in Japanese markdown
+- **images/**: Visual aids and screenshots
+
+## Key Files
+
+- [Move.toml](mdc:Move.toml): Package configuration for each project
+- [SUMMARY.md](mdc:SUMMARY.md): Course table of contents
+- [book.toml](mdc:book.toml): mdBook configuration for course material
+
+## Development Patterns
+
+Each unit follows a consistent structure:
+
+1. Conceptual lessons (\*.md files)
+2. Example projects with working code
+3. Exercises for practice
+4. Progressive complexity from basic to advanced topics

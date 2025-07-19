@@ -1,0 +1,149 @@
+---
+alwaysApply: true
+---
+
+# Translation Consistency Guidelines
+
+This project is a Japanese translation/adaptation of the official Sui Move intro course maintained by Sui Foundation. This repository is forked from the original English content at [https://github.com/sui-foundation/sui-move-intro-course](https://github.com/sui-foundation/sui-move-intro-course).
+
+**Source Repository**: [sui-foundation/sui-move-intro-course](https://github.com/sui-foundation/sui-move-intro-course)
+**Target Repository**: Japanese translation (this repository)
+
+Maintain consistency and quality across all translated materials while preserving educational value and technical accuracy.
+
+## Translation Principles
+
+### Language Strategy
+
+- **Primary Language**: Japanese for all lesson content and explanations
+- **Technical Terms**: Use English terms with Japanese explanations in parentheses on first mention
+- **Code Comments**: Keep in English (industry standard)
+- **Variable/Function Names**: Keep original English names for consistency with Sui ecosystem
+
+### Terminology Consistency
+
+#### Core Sui Concepts (English → Japanese)
+
+- **Object** → オブジェクト
+- **Ownership** → 所有権 (ownership)
+- **Shared Object** → 共有オブジェクト (shared object)
+- **Immutable** → 不変 (immutable)
+- **Transaction Context** → トランザクションコンテキスト (transaction context)
+- **Witness Pattern** → ウィットネスパターン (witness pattern)
+- **Capability** → ケイパビリティ (capability)
+- **Dynamic Field** → 動的フィールド (dynamic field)
+- **Hot Potato** → ホットポテト (hot potato)
+- **One-Time Witness** → ワンタイムウィットネス (one-time witness)
+
+#### Move Language Terms
+
+- **Module** → モジュール (module)
+- **Function** → 関数 (function)
+- **Struct** → 構造体 (struct)
+- **Ability** → アビリティ (ability)
+- **Generic** → ジェネリック (generic)
+- **Entry Function** → エントリー関数 (entry function)
+- **Public Function** → パブリック関数 (public function)
+
+## Content Structure
+
+### Lesson Files (`lessons/*.md`)
+
+````markdown
+# レッスンタイトル (Lesson Title)
+
+## 学習目標 (Learning Objectives)
+
+- 日本語での目標説明
+- English technical concepts in parentheses
+
+## 概念説明 (Concept Explanation)
+
+詳細な日本語説明と technical terms (英語専門用語)
+
+## コード例 (Code Examples)
+
+\```move
+// English comments in code
+public entry fun example_function(ctx: &mut TxContext) {
+// Implementation
+}
+\```
+
+## まとめ (Summary)
+
+重要なポイントの日本語まとめ
+````
+
+### Exercise Files (`exercises/`)
+
+- **Problem Statements**: In Japanese with clear objectives
+- **Code Templates**: English variable names, Japanese comments where helpful
+- **Answer Keys**: Japanese explanations with technical reasoning
+
+## Translation Quality Standards
+
+### Consistency Checks
+
+- Use consistent terminology across all files
+- Maintain parallel structure with English source when applicable
+- Keep technical accuracy while making content accessible to Japanese learners
+
+### Cultural Adaptation
+
+- Use Japanese learning conventions (numbered steps, clear sections)
+- Include cultural context for DeFi/blockchain concepts when helpful
+- Adapt examples to be relevant for Japanese developers
+
+### Source Repository Tracking
+
+- **Monitor Updates**: Regularly check [source repository](https://github.com/sui-foundation/sui-move-intro-course) for updates
+- **Version Tracking**: Document which version/commit of the source is being translated
+- **Change Detection**: Use git diff/compare to identify specific changes in source content
+- **Update Priority**: Focus on technical accuracy updates and new educational content
+
+### Future Translation Workflow
+
+1. **Source Update**: When English content updates, identify changed sections
+2. **Translation Planning**: Review technical terms and maintain terminology consistency
+3. **Content Adaptation**: Translate while preserving educational progression
+4. **Review Process**: Verify technical accuracy and language quality
+5. **Cross-Reference Update**: Update internal links and references
+6. **Sync Verification**: Ensure translated content matches source structure and learning objectives
+
+## File Organization for Translation
+
+### Parallel Structure
+
+- Maintain same directory structure as English source
+- Keep same file names for easy cross-reference
+- Use git history to track translation progress
+
+### Version Management
+
+- Document source version being translated
+- Track translation completion status
+- Note any adaptations or additions for Japanese audience
+
+## Code Documentation Translation
+
+### Move Code Comments
+
+```move
+/// Creates a new transcript object
+/// 新しい成績証明書オブジェクトを作成します
+public fun create_transcript(
+    student_name: String, // 学生名
+    ctx: &mut TxContext
+): Transcript {
+    // Implementation...
+}
+```
+
+### Error Messages
+
+- Keep error constants in English for debugging
+- Add Japanese comments explaining error conditions
+- Document error handling patterns in Japanese
+
+This rule ensures consistent, high-quality Japanese content that serves Japanese learners while maintaining technical accuracy and ecosystem compatibility.
